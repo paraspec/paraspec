@@ -17,7 +17,12 @@ require 'rspec'
 
     describe 'sub 2' do
       it "works (#{i}-2)" do
-        #sleep 0.5
+        if i == 2
+          pending
+          x
+        else
+          #sleep 0.5
+        end
       end
     end
   end
