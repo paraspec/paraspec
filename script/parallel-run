@@ -43,6 +43,12 @@ class DrbRunner < RSpec::Core::Runner
 end
 
 class Controller
+  def initialize(example_count:)
+    @example_count = example_count
+  end
+
+  attr_reader :example_count
+
   def get_example
     example_group, reporter = $queue.shift
     if example_group.nil?
@@ -58,36 +64,86 @@ class Controller
   end
 
   def example_passed(spec, execution_result)
+  #return
     example = find_example(spec)
     # Can write to example here
     example.metadata[:execution_result] = execution_result
     status = execution_result.status
     m = "example_#{status}"
-    RSpec.configuration.reporter.report(1) do |reporter|
+    #RSpec.configuration.reporter.report(1) do |reporter|
       reporter.send(m, example)
-    end
+    #end
     #byebug
     #p args
   end
 
   def find_example(spec)
-    groups = [] + RSpec.world.example_groups
-    until groups.empty?
-      new_groups = []
-      groups.each do |group|
-        example = group.examples.detect do |example|
-          example.metadata[:file_path] == spec[:file_path] &&
-          example.metadata[:scoped_id] == spec[:scoped_id]
-        end
-        if example
-          return example
-        end
-        new_groups += group.children
-      end
-      groups = new_groups
+    example = all_examples.detect do |example|
+      example.metadata[:file_path] == spec[:file_path] &&
+      example.metadata[:scoped_id] == spec[:scoped_id]
     end
-    raise "Not found"
+    unless example
+    byebug
+      raise "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
+    end
+    example
   end
+
+  def run
+  #p "total #{@example_count}"
+    @start_time = Time.now
+    reporter.report(@example_count) do
+      yield
+    end
+
+  end
+
+  def reporter
+    @reporter ||= RSpec.configuration.reporter
+  end
+
+  def all_examples
+    @all_examples ||= begin
+      groups = [] + RSpec.world.example_groups
+      examples = []
+      until groups.empty?
+        new_groups = []
+        groups.each do |group|
+          examples += group.examples
+          new_groups += group.children
+        end
+        groups = new_groups
+      end
+      examples
+    end
+  end
+
+  def dump_summary
+    notification = RSpec::Core::Notifications::SummaryNotification.new(
+      @start_time ? Time.now-@start_time : 0,
+      all_examples,
+      all_examples.select { |e| e.execution_result.status == :failed },
+      all_examples.select { |e| e.execution_result.status == :pending },
+      -1,
+      123,
+    )
+    #p notification
+    RSpec.configuration.formatters.first.dump_summary(notification)
+  end
+end
+
+class MasterRunner
+  def initialize
+    runner.setup(STDOUT, STDERR)
+  end
+
+  private def runner
+    @runner ||= begin
+      options = RSpec::Core::ConfigurationOptions.new(ARGV)
+      RSpec::Core::Runner.new(options)
+    end
+  end
+
 end
 
 class SlaveRunner
@@ -144,11 +200,11 @@ class SlaveFormatter
   end
 
   def dump_summary(notification)
-    #p notification
+    #byebug
   end
 
   def method_missing(m, args)
-    p m
+    #p m
   end
 
   def example_started(notification)
@@ -164,10 +220,10 @@ class SlaveFormatter
       scoped_id: notification.example.metadata[:scoped_id],
     }
     #byebug
-    p :a
+    #p :a
     $controller.example_passed(spec, notification.example.execution_result)
-    b :b
-    1
+    #b :b
+    #1
   end
 
   def example_failed(notification)
@@ -179,9 +235,27 @@ class SlaveFormatter
   end
 end
 
+RSpec.configuration.files_or_directories_to_run = ['spec']
+
+rd, wr = IO.pipe
+if pid = fork
+  # parent
+  wr.close
+  Process.wait(pid)
+  example_count = rd.read.to_i
+  rd.close
+else
+  # child
+  rd.close
+  RSpec.configuration.load_spec_files
+  wr << Controller.new(example_count: 0).all_examples.count.to_s
+  wr.close
+  exec('true')
+end
+
 runners = []
 pipes = []
-concurrency = 1
+concurrency = 4
 1.upto(concurrency) do |i|
   rd, wr = IO.pipe
   if pid = fork
@@ -217,10 +291,13 @@ concurrency = 1
   end
 end
 
-front_object = Controller.new
-DRb.start_service(DRB_URI, front_object)
+controller = Controller.new(example_count: example_count)
+DRb.start_service(DRB_URI, controller)
 
-p DrbRunner.run(['spec'])
+#MasterRunner.new
+controller.run do
+  DrbRunner.run(['spec'])
+end
 
     pipes.each do |pipe|
       pipe.write('s')
@@ -236,3 +313,5 @@ p DrbRunner.run(['spec'])
       rescue Errno::ECHILD
       end
     end
+
+controller.dump_summary

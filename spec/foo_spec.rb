@@ -3,7 +3,7 @@ require 'rspec'
 
 # be parallel_rspec -n 4 spec
 
-5.times do |i|
+10.times do |i|
   describe "Foo #{i}" do
     describe 'sub 1' do
       it "works (#{i}-1)" do
