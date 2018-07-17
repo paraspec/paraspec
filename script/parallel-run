@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'rspec'
+require 'forwardable'
+
+class DrbExampleGroup
+  def initialize(group)
+    @group = group
+  end
+
+  def method_missing(m, *args)
+    @group.send(m, *args)
+  end
+
+  def respond_to?(m)
+    super || @group.respond_to?(m)
+  end
+
+  def run(reporter)
+    puts "Running #{@group}"
+  end
+end
+
+class DrbRunner < RSpec::Core::Runner
+  def run_specs(example_groups)
+    super(example_groups.map { |g| DrbExampleGroup.new(g) })
+  end
+end
+
+p DrbRunner.run(['spec'])
