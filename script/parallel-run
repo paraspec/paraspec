@@ -27,4 +27,42 @@ class DrbRunner < RSpec::Core::Runner
   end
 end
 
-p DrbRunner.run(['spec'])
+runners = []
+pipes = []
+concurrency = 4
+1.upto(concurrency) do |i|
+  rd, wr = IO.pipe
+  if pid = fork
+    # parent
+    rd.close
+    pipes << wr
+    runners << pid
+  else
+    # child
+    wr.close
+
+    begin
+      rd.read_nonblock(1)
+    rescue EOFError
+      rd.close
+    rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EINTR
+    #puts "waiting in #{$$}"
+      sleep 0.5
+      retry
+    end
+    Process.exec('true')
+  end
+end
+
+    pipes.each do |pipe|
+      pipe.close
+    end
+    runners.each do |pid|
+      begin
+      #p "waiting for #{pid}"
+        Process.wait(pid)
+      rescue Errno::ECHILD
+      end
+    end
+
+#p DrbRunner.run(['spec'])
