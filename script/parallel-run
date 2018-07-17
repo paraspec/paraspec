@@ -76,14 +76,53 @@ class SlaveRunner
   private def runner
     @runner ||= begin
       options = RSpec::Core::ConfigurationOptions.new(ARGV)
+      options.options[:formatters] = [['SlaveFormatter']]
+      byebug
       RSpec::Core::Runner.new(options)
     end
   end
 end
 
+class SlaveFormatter
+  RSpec::Core::Formatters.register self,
+    :start,
+    :example_group_started,
+    :example_started,
+    :example_passed,
+    :example_failed,
+    :example_pending,
+    :message,
+    :stop,
+    :start_dump,
+    :dump_pending,
+    :dump_failures,
+    :dump_summary,
+    :seed,
+    :close
+
+  def initialize(output)
+  end
+
+  def start(notification)
+    p notification
+  end
+
+  def stop(notification)
+    p notification
+  end
+
+  def dump_summary(notification)
+    p notification
+  end
+
+  def method_missing(m, args)
+    p m
+  end
+end
+
 runners = []
 pipes = []
-concurrency = 4
+concurrency = 1
 1.upto(concurrency) do |i|
   rd, wr = IO.pipe
   if pid = fork
