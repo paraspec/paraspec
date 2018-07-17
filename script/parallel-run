@@ -56,6 +56,38 @@ class Controller
 
     id
   end
+
+  def example_passed(spec, execution_result)
+    example = find_example(spec)
+    # Can write to example here
+    example.metadata[:execution_result] = execution_result
+    status = execution_result.status
+    m = "example_#{status}"
+    RSpec.configuration.reporter.report(1) do |reporter|
+      reporter.send(m, example)
+    end
+    #byebug
+    #p args
+  end
+
+  def find_example(spec)
+    groups = [] + RSpec.world.example_groups
+    until groups.empty?
+      new_groups = []
+      groups.each do |group|
+        example = group.examples.detect do |example|
+          example.metadata[:file_path] == spec[:file_path] &&
+          example.metadata[:scoped_id] == spec[:scoped_id]
+        end
+        if example
+          return example
+        end
+        new_groups += group.children
+      end
+      groups = new_groups
+    end
+    raise "Not found"
+  end
 end
 
 class SlaveRunner
@@ -77,7 +109,7 @@ class SlaveRunner
     @runner ||= begin
       options = RSpec::Core::ConfigurationOptions.new(ARGV)
       options.options[:formatters] = [['SlaveFormatter']]
-      byebug
+      #byebug
       RSpec::Core::Runner.new(options)
     end
   end
@@ -104,19 +136,46 @@ class SlaveFormatter
   end
 
   def start(notification)
-    p notification
+    #p notification
   end
 
   def stop(notification)
-    p notification
+    #p notification
   end
 
   def dump_summary(notification)
-    p notification
+    #p notification
   end
 
   def method_missing(m, args)
     p m
+  end
+
+  def example_started(notification)
+  end
+
+  def example_passed(notification)
+    example_notification(notification)
+  end
+
+  def example_notification(notification)
+    spec = {
+      file_path: notification.example.metadata[:file_path],
+      scoped_id: notification.example.metadata[:scoped_id],
+    }
+    #byebug
+    p :a
+    $controller.example_passed(spec, notification.example.execution_result)
+    b :b
+    1
+  end
+
+  def example_failed(notification)
+    example_notification(notification)
+  end
+
+  def example_pending(notification)
+    example_notification(notification)
   end
 end
 
@@ -136,11 +195,11 @@ concurrency = 1
     rd.read(1)
 
     DRb.start_service
-    controller = DRbObject.new_with_uri(DRB_URI)
+    $controller = DRbObject.new_with_uri(DRB_URI)
 
     runner = SlaveRunner.new
 
-    while spec = controller.get_example
+    while spec = $controller.get_example
       runner.run(spec)
       #example.run(reporter)
     end
