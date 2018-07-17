@@ -3,6 +3,8 @@
 require 'rspec'
 require 'forwardable'
 
+$queue = []
+
 class DrbExampleGroup
   def initialize(group)
     @group = group
@@ -17,7 +19,8 @@ class DrbExampleGroup
   end
 
   def run(reporter)
-    puts "Running #{@group}"
+    puts "Queueing #{@group}"
+    $queue << [self, reporter]
   end
 end
 
@@ -54,6 +57,8 @@ concurrency = 4
   end
 end
 
+p DrbRunner.run(['spec'])
+
     pipes.each do |pipe|
       pipe.close
     end
@@ -64,5 +69,3 @@ end
       rescue Errno::ECHILD
       end
     end
-
-#p DrbRunner.run(['spec'])
