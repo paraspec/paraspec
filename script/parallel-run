@@ -1,9 +1,14 @@
 #!/usr/bin/env ruby
 
+require 'byebug'
+require 'ostruct'
+require 'drb/drb'
 require 'rspec'
 require 'forwardable'
 
 $queue = []
+
+DRB_URI="druby://localhost:8787"
 
 class DrbExampleGroup
   def initialize(group)
@@ -14,19 +19,65 @@ class DrbExampleGroup
     @group.send(m, *args)
   end
 
-  def respond_to?(m)
-    super || @group.respond_to?(m)
+  def respond_to?(m, *args)
+    super || @group.respond_to?(m, *args)
   end
 
   def run(reporter)
     puts "Queueing #{@group}"
     $queue << [self, reporter]
   end
+
+=begin
+  def self.children
+  p :here
+    super.map { |g| DrbExampleGroup.new(g) }
+  end
+=end
 end
 
 class DrbRunner < RSpec::Core::Runner
   def run_specs(example_groups)
     super(example_groups.map { |g| DrbExampleGroup.new(g) })
+  end
+end
+
+class Controller
+  def get_example
+    example_group, reporter = $queue.shift
+    if example_group.nil?
+      return nil
+    end
+    m = example_group.metadata
+    id = OpenStruct.new(
+      file_path: m[:file_path],
+      scoped_id: m[:scoped_id],
+    )
+
+    id
+  end
+end
+
+class SlaveRunner
+  def initialize
+    runner.setup(STDOUT, STDERR)
+  end
+
+  def run(spec)
+    group = runner.world.example_groups.detect do |g|
+      g.metadata[:file_path] == spec[:file_path] &&
+      g.metadata[:scoped_id] == spec[:scoped_id]
+    end
+    runner.run_specs([group]).tap do
+      #persist_example_statuses
+    end
+  end
+
+  private def runner
+    @runner ||= begin
+      options = RSpec::Core::ConfigurationOptions.new(ARGV)
+      RSpec::Core::Runner.new(options)
+    end
   end
 end
 
@@ -43,6 +94,17 @@ concurrency = 4
   else
     # child
     wr.close
+    rd.read(1)
+
+    DRb.start_service
+    controller = DRbObject.new_with_uri(DRB_URI)
+
+    runner = SlaveRunner.new
+
+    while spec = controller.get_example
+      runner.run(spec)
+      #example.run(reporter)
+    end
 
     begin
       rd.read_nonblock(1)
@@ -57,7 +119,14 @@ concurrency = 4
   end
 end
 
+front_object = Controller.new
+DRb.start_service(DRB_URI, front_object)
+
 p DrbRunner.run(['spec'])
+
+    pipes.each do |pipe|
+      pipe.write('s')
+    end
 
     pipes.each do |pipe|
       pipe.close

@@ -5,10 +5,16 @@ require 'rspec'
 
 20.times do |i|
   describe "Foo #{i}" do
-  #byebug
-    it 'works' do
-    #byebug
-      sleep 0.5
+    describe 'sub 1' do
+      it 'works' do
+        sleep 0.5
+      end
+    end
+
+    describe 'sub 2' do
+      it 'works' do
+        sleep 0.5
+      end
     end
   end
 end
