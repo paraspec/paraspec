@@ -13,6 +13,9 @@ module Psr
   class Master
     def initialize(options={})
       @supervisor_pipe = options[:supervisor_pipe]
+      if RSpec.world.example_groups.count > 0
+        raise 'Example groups loaded too early/spilled across processes'
+      end
       RSpec.configuration.load_spec_files
       @queue = [] + RSpecFacade.all_example_groups
       #byebug

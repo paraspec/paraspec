@@ -57,6 +57,9 @@ module Psr
           else
             # child - worker
             rd.close
+            if RSpec.world.example_groups.count > 0
+              raise 'Example groups loaded too early/spilled across processes'
+            end
             Worker.new(:supervisor_pipe => wr).run
             exit(0)
           end

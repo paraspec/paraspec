@@ -17,6 +17,9 @@ module Psr
     end
 
     def run(spec)
+      if RSpecFacade.all_example_groups.count == 0
+        raise "No example groups loaded"
+      end
       group = RSpecFacade.all_example_groups.detect do |g|
         g.metadata[:file_path] == spec[:file_path] &&
         g.metadata[:scoped_id] == spec[:scoped_id]
