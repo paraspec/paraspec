@@ -10,7 +10,14 @@ module Psr
     end
 
     def run
+      DRb.start_service
       @master = DRbObject.new_with_uri(MASTER_DRB_URI)
+
+      runner = WorkerRunner.new(master: @master)
+
+      while spec = @master.get_spec
+        runner.run(spec)
+      end
     end
   end
 end
