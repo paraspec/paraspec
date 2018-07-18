@@ -17,9 +17,13 @@ module Psr
     end
 
     def run(spec)
-      group = runner.world.example_groups.detect do |g|
+      group = RSpecFacade.all_example_groups.detect do |g|
         g.metadata[:file_path] == spec[:file_path] &&
         g.metadata[:scoped_id] == spec[:scoped_id]
+      end
+      unless group
+      byebug
+        raise "No example group for #{spec.inspect}"
       end
       runner.run_specs([group]).tap do
         #persist_example_statuses

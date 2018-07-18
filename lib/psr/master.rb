@@ -14,7 +14,7 @@ module Psr
     def initialize(options={})
       @supervisor_pipe = options[:supervisor_pipe]
       RSpec.configuration.load_spec_files
-      @queue = [] + all_example_groups
+      @queue = [] + RSpecFacade.all_example_groups
     end
 
     def run
@@ -34,26 +34,6 @@ module Psr
 
     def suite_ok?
       RSpec.configuration.reporter.send(:instance_variable_get,'@non_example_exception_count') == 0
-    end
-
-    def all_example_groups
-      @all_example_groups ||= begin
-        groups = [] + RSpec.world.example_groups
-        all_groups = []
-        until groups.empty?
-          new_groups = []
-          groups.each do |group|
-            all_groups << group
-            new_groups += group.children
-          end
-          groups = new_groups
-        end
-        all_groups
-      end
-    end
-
-    def all_examples
-      @all_examples ||= all_example_groups.map { |g| g.examples }.flatten
     end
 
     def get_spec
@@ -82,7 +62,7 @@ module Psr
     end
 
     def find_example(spec)
-      example = all_examples.detect do |example|
+      example = RSpecFacade.all_examples.detect do |example|
         example.metadata[:file_path] == spec[:file_path] &&
         example.metadata[:scoped_id] == spec[:scoped_id]
       end
