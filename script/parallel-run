@@ -238,7 +238,12 @@ class SlaveFormatter
   end
 end
 
-RSpec.configuration.files_or_directories_to_run = ['spec']
+files = if ARGV.length > 0
+  ARGV
+else
+  ['spec']
+end
+RSpec.configuration.files_or_directories_to_run = files
 
 supervisor = Psr::Supervisor.new
 supervisor.run

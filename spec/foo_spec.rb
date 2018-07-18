@@ -7,7 +7,7 @@ require 'rspec'
   describe "Foo #{i}" do
     describe 'sub 1' do
       it "works (#{i}-1)" do
-        if i == 3
+        if i == 2
           expect(1).to eq(2)
         else
           sleep 0.5
@@ -17,11 +17,11 @@ require 'rspec'
 
     describe 'sub 2' do
       it "works (#{i}-2)" do
-        if i == 2
+        if i == 1
           pending
           x
         else
-          #sleep 0.5
+          sleep 0.5
         end
       end
     end

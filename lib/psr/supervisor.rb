@@ -9,7 +9,7 @@ module Psr
     include DrbHelpers
 
     def initialize(options={})
-      @concurrency = options[:concurrency] || 3
+      @concurrency = options[:concurrency] || 4
     end
 
     def run
