@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+$: << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'psr'
 require 'byebug'
 require 'ostruct'
 require 'drb/drb'
@@ -237,17 +240,27 @@ end
 
 RSpec.configuration.files_or_directories_to_run = ['spec']
 
+supervisor = Psr::Supervisor.new
+supervisor.run
+exit 4
+
 rd, wr = IO.pipe
 if pid = fork
   # parent
   wr.close
   Process.wait(pid)
+
   example_count = rd.read.to_i
   rd.close
 else
   # child
   rd.close
   RSpec.configuration.load_spec_files
+  if RSpec.configuration.reporter.send(:instance_variable_get,'@non_example_exception_count') > 0
+    exec('false')
+  end
+
+  byebug
   wr << Controller.new(example_count: 0).all_examples.count.to_s
   wr.close
   exec('true')
