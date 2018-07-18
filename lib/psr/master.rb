@@ -15,9 +15,12 @@ module Psr
       @supervisor_pipe = options[:supervisor_pipe]
       RSpec.configuration.load_spec_files
       @queue = [] + RSpecFacade.all_example_groups
+      #byebug
+      puts "#{@queue.length} example groups queued"
     end
 
     def run
+      #p :start
       DRb.start_service(MASTER_DRB_URI, self)
       until @stop
         sleep 1
@@ -75,6 +78,29 @@ module Psr
 
     def reporter
       @reporter ||= RSpec.configuration.reporter
+    end
+
+    def start
+      @start_time = Time.now
+    end
+
+    def dump_summary
+    #byebug
+      all_examples = RSpecFacade.all_examples
+      notification = RSpec::Core::Notifications::SummaryNotification.new(
+        @start_time ? Time.now-@start_time : 0,
+        all_examples,
+        all_examples.select { |e| e.execution_result.status == :failed },
+        all_examples.select { |e| e.execution_result.status == :pending },
+        0,
+        0,
+      )
+      RSpec.configuration.formatters.each do |f|
+        if f.respond_to?(:dump_summary)
+          f.dump_summary(notification)
+        end
+      end
+      #p :fini, $$
     end
   end
 end

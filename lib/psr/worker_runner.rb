@@ -25,7 +25,7 @@ module Psr
       byebug
         raise "No example group for #{spec.inspect}"
       end
-      runner.run_specs([group]).tap do
+      runner.run_specs(group.children).tap do
         #persist_example_statuses
       end
     end

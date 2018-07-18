@@ -27,18 +27,21 @@ module Psr
     end
 
     def run_supervisor
+    #p :run_supe
       start_time = Time.now
       @master = DRbObject.new_with_uri(MASTER_DRB_URI)
       begin
         @master.ping
       rescue DRb::DRbConnError
-        if Time.now - start_time < 5
+        if Time.now - start_time < 50
           sleep 0.5
           retry
         else
           raise
         end
       end
+
+      @master.start
 
       if @master.suite_ok?
         @worker_pipes = []
@@ -55,6 +58,7 @@ module Psr
             # child - worker
             rd.close
             Worker.new(:supervisor_pipe => wr).run
+            exit(0)
           end
         end
 
@@ -62,6 +66,9 @@ module Psr
           wait_for_process(pid)
         end
       end
+
+#p :hm
+      @master.dump_summary
 
       @master.exit
       wait_for_process(@master_pid)
