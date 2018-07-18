@@ -58,6 +58,7 @@ module Psr
       status = execution_result.status
       m = "example_#{status}"
       #RSpec.configuration.reporter.report(1) do |reporter|
+      #p RSpec.configuration.formatters
         reporter.send(m, example)
       #end
       #byebug
@@ -95,9 +96,12 @@ module Psr
         0,
         0,
       )
+      examples_notification = RSpec::Core::Notifications::ExamplesNotification.new(reporter)
       RSpec.configuration.formatters.each do |f|
         if f.respond_to?(:dump_summary)
           f.dump_summary(notification)
+          f.dump_failures(examples_notification)
+          f.dump_pending(examples_notification)
         end
       end
       #p :fini, $$
