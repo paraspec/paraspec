@@ -5,6 +5,8 @@ module Psr
   # There can be one or more workers participating in a test run.
   # A worker generally loads all of the tests but runs a subset of them.
   class Worker
+    include DrbHelpers
+
     def initialize(options={})
       @supervisor_pipe = options[:supervisor_pipe]
       if RSpec.world.example_groups.count > 0
@@ -17,8 +19,7 @@ module Psr
     end
 
     def run
-      DRb.start_service
-      @master = DRbObject.new_with_uri(MASTER_DRB_URI)
+      @master = drb_connect(MASTER_DRB_URI)
 
       runner = WorkerRunner.new(master: @master)
 

@@ -6,8 +6,10 @@ module Psr
   # the supervisor should not ever have any of the tests loaded in its
   # address space.
   class Supervisor
+    include DrbHelpers
+
     def initialize(options={})
-      @concurrency = options[:concurrency] || 1
+      @concurrency = options[:concurrency] || 3
     end
 
     def run
@@ -29,19 +31,10 @@ module Psr
     def run_supervisor
     #p :run_supe
       start_time = Time.now
-      @master = DRbObject.new_with_uri(MASTER_DRB_URI)
-      begin
-        @master.ping
-      rescue DRb::DRbConnError
-        if Time.now - start_time < 50
-          sleep 0.5
-          retry
-        else
-          raise
-        end
-      end
+      @master = drb_connect(MASTER_DRB_URI)
 
       @master.start
+      #DRb.stop_service
 
       if @master.suite_ok?
         @worker_pipes = []

@@ -13,6 +13,7 @@ module Psr
   class Master
     def initialize(options={})
       @supervisor_pipe = options[:supervisor_pipe]
+      #RSpec.configuration.formatter = 'progress'
       if RSpec.world.example_groups.count > 0
         raise 'Example groups loaded too early/spilled across processes'
       end
@@ -43,6 +44,7 @@ module Psr
     end
 
     def get_spec
+    #p :getting_spec
       example_group = @queue.shift
       return nil if example_group.nil?
 
@@ -62,7 +64,14 @@ module Psr
       m = "example_#{status}"
       #RSpec.configuration.reporter.report(1) do |reporter|
       #p RSpec.configuration.formatters
+      #ii
         reporter.send(m, example)
+      notification = RSpec::Core::Notifications::ExampleNotification.for(example)
+      RSpec.configuration.formatters.each do |f|
+        if f.respond_to?(m)
+          f.send(m, notification)
+        end
+      end
       #end
       #byebug
       #p args
@@ -99,6 +108,7 @@ module Psr
         0,
         0,
       )
+      #p notification
       examples_notification = RSpec::Core::Notifications::ExamplesNotification.new(reporter)
       RSpec.configuration.formatters.each do |f|
         if f.respond_to?(:dump_summary)

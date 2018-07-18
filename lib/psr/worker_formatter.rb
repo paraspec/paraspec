@@ -42,6 +42,7 @@ module Psr
     end
 
     def example_passed(notification)
+    #byebug
       example_notification(notification)
     end
 
