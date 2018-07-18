@@ -24,6 +24,7 @@ module Psr
     end
 
     def run
+#    puts "master: #{Process.pid} #{Process.getpgrp}"
       #p :start
       DRb.start_service(MASTER_DRB_URI, self)
       until @stop

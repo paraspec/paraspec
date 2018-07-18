@@ -7,13 +7,15 @@ module Psr
   # address space.
   class Supervisor
     include DrbHelpers
+    include ProcessHelpers
 
     def initialize(options={})
-      @concurrency = options[:concurrency] || 4
+      @concurrency = options[:concurrency] || 1
     end
 
     def run
       Process.setpgrp
+      at_exit { kill_child_processes }
 
       rd, wr = IO.pipe
       if @master_pid = fork

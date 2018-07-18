@@ -19,6 +19,7 @@ module Psr
     end
 
     def run
+    #puts "worker: #{Process.pid} #{Process.getpgrp}"
       @master = drb_connect(MASTER_DRB_URI)
 
       runner = WorkerRunner.new(master: @master)
