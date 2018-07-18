@@ -1,4 +1,5 @@
 require 'psr/version'
+require 'psr/ipc'
 require 'psr/supervisor'
 require 'psr/master'
 require 'psr/worker'
