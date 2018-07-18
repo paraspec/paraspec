@@ -6,6 +6,10 @@ module Psr
   # the supervisor should not ever have any of the tests loaded in its
   # address space.
   class Supervisor
+    def initialize(options={})
+      @concurrency = options[:concurrency] || 1
+    end
+
     def run
       Process.setpgrp
 
@@ -37,10 +41,38 @@ module Psr
       end
 
       if @master.suite_ok?
+        @worker_pipes = []
+        @worker_pids = []
+
+        1.upto(@concurrency) do |i|
+          rd, wr = IO.pipe
+          if worker_pid = fork
+            # parent
+            wr.close
+            @worker_pipes << rd
+            @worker_pids << worker_pid
+          else
+            # child - worker
+            rd.close
+            Worker.new(:supervisor_pipe => wr).run
+          end
+        end
+
+        @worker_pids.each do |pid|
+          wait_for_process(pid)
+        end
       end
 
       @master.exit
-      Process.wait(@master_pid)
+      wait_for_process(@master_pid)
+    end
+
+    def wait_for_process(pid)
+      begin
+        Process.wait(pid)
+      rescue Errno::ECHILD
+        # already dead
+      end
     end
   end
 end

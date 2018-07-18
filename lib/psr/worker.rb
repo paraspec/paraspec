@@ -5,5 +5,12 @@ module Psr
   # There can be one or more workers participating in a test run.
   # A worker generally loads all of the tests but runs a subset of them.
   class Worker
+    def initialize(options={})
+      @supervisor_pipe = options[:supervisor_pipe]
+    end
+
+    def run
+      @master = DRbObject.new_with_uri(MASTER_DRB_URI)
+    end
   end
 end

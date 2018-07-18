@@ -11,7 +11,7 @@ module Psr
   #    single test execution is not broken up by output from other test
   #    executions.
   class Master
-    def initialize(options)
+    def initialize(options={})
       @supervisor_pipe = options[:supervisor_pipe]
       RSpec.configuration.load_spec_files
     end
