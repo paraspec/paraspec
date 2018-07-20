@@ -66,7 +66,7 @@ module Psr
       #RSpec.configuration.reporter.report(1) do |reporter|
       #p RSpec.configuration.formatters
       #ii
-      p ['send', example.metadata[:scoped_id]]
+      #p ['send', example.metadata[:scoped_id]]
         reporter.send(m, example)
       notification = RSpec::Core::Notifications::ExampleNotification.for(example)
       RSpec.configuration.formatters.each do |f|

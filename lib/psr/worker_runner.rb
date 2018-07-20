@@ -35,7 +35,7 @@ module Psr
       #p group.examples
       RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
       RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
-      RSpec.world.refilter_examples
+      RSpec.world.filter_examples
       #p RSpec.world.filtered_examples.values.map(&:count)
       runner.run_specs([group]).tap do
         #persist_example_statuses

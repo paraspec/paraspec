@@ -10,7 +10,7 @@ module Psr
     include ProcessHelpers
 
     def initialize(options={})
-      @concurrency = options[:concurrency] || 1
+      @concurrency = options[:concurrency] || 4
     end
 
     def run
