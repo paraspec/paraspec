@@ -9,14 +9,15 @@ module Paraspec
 
     def initialize(options={})
       @number = options[:number]
+      ENV['TEST_ENV_NUMBER'] = @number.to_s
       @supervisor_pipe = options[:supervisor_pipe]
       if RSpec.world.example_groups.count > 0
         raise 'Example groups loaded too early/spilled across processes'
       end
-      RSpec.configuration.load_spec_files
+      #RSpec.configuration.load_spec_files
       # possibly need to signal to supervisor when we are ready to
       # start running tests - there is a race otherwise I think
-      puts "#{RSpecFacade.all_example_groups.count} example groups known"
+      #puts "#{RSpecFacade.all_example_groups.count} example groups known"
     end
 
     def run

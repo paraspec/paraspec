@@ -2,6 +2,8 @@ require 'timeout'
 
 module Paraspec
   module DrbHelpers
+    WAIT_TIME = 5
+
     class TimeoutWrapper < BasicObject
       def initialize(target, timeout)
         @target, @timeout = target, timeout
@@ -39,12 +41,12 @@ module Paraspec
         # Assumes remote has a ping method
         remote.ping
       rescue DRb::DRbConnError, TypeError
-        raise if Time.now - start_time > 5
+        raise if Time.now - start_time > WAIT_TIME
         sleep 0.5
         Paraspec.logger.debug("#{ident} Retrying DRb ping")
         retry
       rescue Timeout::Error
-        raise if Time.now - start_time > 5
+        raise if Time.now - start_time > WAIT_TIME
         Paraspec.logger.debug("#{ident} Reconnecting to DRb")
         remote = TimeoutWrapper.new(DRbObject.new_with_uri(uri), 2)
         retry
