@@ -9,6 +9,8 @@ require 'drb/drb'
 require 'rspec'
 require 'forwardable'
 
+#Psr.logger.level = Logger::DEBUG
+
 $queue = []
 
 DRB_URI="druby://localhost:8787"
@@ -245,7 +247,7 @@ else
 end
 RSpec.configuration.files_or_directories_to_run = files
 
-supervisor = Psr::Supervisor.new
+supervisor = Psr::Supervisor.new(concurrency: 8)
 supervisor.run
 exit 4
 
