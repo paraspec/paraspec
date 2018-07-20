@@ -28,7 +28,16 @@ module Psr
       byebug
         raise "No example group for #{spec.inspect}"
       end
-      runner.run_specs(group.children).tap do
+      examples = group.examples
+      return if examples.empty?
+      ids = examples.map { |e| e.metadata[:scoped_id] }
+      #p [group.metadata,group.children,group.examples]
+      #p group.examples
+      RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
+      RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
+      RSpec.world.refilter_examples
+      #p RSpec.world.filtered_examples.values.map(&:count)
+      runner.run_specs([group]).tap do
         #persist_example_statuses
       end
     end
