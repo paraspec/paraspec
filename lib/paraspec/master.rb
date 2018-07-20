@@ -17,6 +17,27 @@ module Paraspec
       if RSpec.world.example_groups.count > 0
         raise 'Example groups loaded too early/spilled across processes'
       end
+
+      class << RSpec.configuration
+        def command
+          'rspec'
+        end
+      end
+
+      rspec_options = RSpec::Core::ConfigurationOptions.new(ARGV)
+      rspec_options.configure(RSpec.configuration)
+=begin
+      if RSpec.configuration.files_to_run.empty?
+        RSpec.configuration.send(:remove_instance_variable, '@files_to_run')
+        RSpec.configuration.files_or_directories_to_run = RSpec.configuration.default_path
+        RSpec.configuration.files_to_run
+        p ['aa1',RSpec.configuration.files_to_run]
+        rspec_options.configure(RSpec.configuration)
+        RSpec.configuration.load_spec_files
+      end
+=end
+#p ['aa1',RSpec.configuration.files_to_run]
+
       RSpec.configuration.load_spec_files
       @queue = [] + RSpecFacade.all_example_groups
       #byebug

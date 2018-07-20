@@ -26,12 +26,14 @@ if options[:debug]
   Paraspec.logger.level = Logger::DEBUG
 end
 
+=begin
 files = if ARGV.length > 0
   ARGV
 else
   ['spec']
 end
 RSpec.configuration.files_or_directories_to_run = files
+=end
 
 supervisor = Paraspec::Supervisor.new(concurrency: options[:concurrency] || 4)
 supervisor.run
