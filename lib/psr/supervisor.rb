@@ -10,6 +10,8 @@ module Psr
     include ProcessHelpers
 
     def initialize(options={})
+      @original_process_title = $0
+      $0 = "#{@original_process_title} [supervisor]"
       @concurrency = options[:concurrency] || 4
     end
 
@@ -25,6 +27,7 @@ module Psr
         run_supervisor
       else
         # child - master
+        $0 = "#{@original_process_title} [master]"
         rd.close
         Master.new(:supervisor_pipe => wr).run
       end
@@ -51,6 +54,7 @@ module Psr
             @worker_pids << worker_pid
           else
             # child - worker
+            $0 = "#{@original_process_title} [worker-#{i}]"
             rd.close
             if RSpec.world.example_groups.count > 0
               raise 'Example groups loaded too early/spilled across processes'
