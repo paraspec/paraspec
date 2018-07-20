@@ -1,3 +1,4 @@
+require 'paraspec/rspec_patches'
 require 'paraspec/version'
 require 'paraspec/logger'
 require 'paraspec/ipc'

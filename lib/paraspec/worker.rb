@@ -15,12 +15,6 @@ module Paraspec
         raise 'Example groups loaded too early/spilled across processes'
       end
 
-      class << RSpec.configuration
-        def command
-          'rspec'
-        end
-      end
-
       #RSpec.configuration.load_spec_files
       # possibly need to signal to supervisor when we are ready to
       # start running tests - there is a race otherwise I think

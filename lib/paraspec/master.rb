@@ -18,12 +18,6 @@ module Paraspec
         raise 'Example groups loaded too early/spilled across processes'
       end
 
-      class << RSpec.configuration
-        def command
-          'rspec'
-        end
-      end
-
       rspec_options = RSpec::Core::ConfigurationOptions.new(ARGV)
       rspec_options.configure(RSpec.configuration)
 =begin
