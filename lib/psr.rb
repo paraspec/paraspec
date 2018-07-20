@@ -1,4 +1,5 @@
 require 'psr/version'
+require 'psr/logger'
 require 'psr/ipc'
 require 'psr/drb_helpers'
 require 'psr/process_helpers'

@@ -121,5 +121,9 @@ module Psr
       end
       #p :fini, $$
     end
+
+    def ident
+      "[m]"
+    end
   end
 end

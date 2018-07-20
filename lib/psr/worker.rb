@@ -8,6 +8,7 @@ module Psr
     include DrbHelpers
 
     def initialize(options={})
+      @number = options[:number]
       @supervisor_pipe = options[:supervisor_pipe]
       if RSpec.world.example_groups.count > 0
         raise 'Example groups loaded too early/spilled across processes'
@@ -24,9 +25,19 @@ module Psr
 
       runner = WorkerRunner.new(master: @master)
 
-      while spec = @master.get_spec
+      while true
+        Psr.logger.debug("#{ident} Requesting a spec")
+        spec = @master.get_spec
+        Psr.logger.debug("#{ident} Got spec #{spec || 'nil'}")
+        break if spec.nil?
+        Psr.logger.debug("#{ident} Running spec #{spec}")
         runner.run(spec)
+        Psr.logger.debug("#{ident} Finished running spec #{spec}")
       end
+    end
+
+    def ident
+      "[w#{@number}]"
     end
   end
 end

@@ -12,7 +12,7 @@ module Psr
     def initialize(options={})
       @original_process_title = $0
       $0 = "#{@original_process_title} [supervisor]"
-      @concurrency = options[:concurrency] || 4
+      @concurrency = options[:concurrency] || 1
     end
 
     def run
@@ -59,17 +59,18 @@ module Psr
             if RSpec.world.example_groups.count > 0
               raise 'Example groups loaded too early/spilled across processes'
             end
-            Worker.new(:supervisor_pipe => wr).run
+            Worker.new(:number => i, :supervisor_pipe => wr).run
             exit(0)
           end
         end
 
-        @worker_pids.each do |pid|
+        Psr.logger.debug("[s] Waiting for workers")
+        @worker_pids.each_with_index do |pid, i|
+          Psr.logger.debug("[s] Waiting for worker #{i+1} at #{pid}")
           wait_for_process(pid)
         end
       end
 
-#p :hm
       @master.dump_summary
 
       @master.exit
@@ -82,6 +83,10 @@ module Psr
       rescue Errno::ECHILD
         # already dead
       end
+    end
+
+    def ident
+      "[s]"
     end
   end
 end
