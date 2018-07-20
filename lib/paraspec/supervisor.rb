@@ -1,6 +1,6 @@
 require 'drb/drb'
 
-module Psr
+module Paraspec
   # Supervisor is the process that spawns all other processes.
   # Its primary responsibility is to be a "clean slate", specifically
   # the supervisor should not ever have any of the tests loaded in its
@@ -64,9 +64,9 @@ module Psr
           end
         end
 
-        Psr.logger.debug("[s] Waiting for workers")
+        Paraspec.logger.debug("[s] Waiting for workers")
         @worker_pids.each_with_index do |pid, i|
-          Psr.logger.debug("[s] Waiting for worker #{i+1} at #{pid}")
+          Paraspec.logger.debug("[s] Waiting for worker #{i+1} at #{pid}")
           wait_for_process(pid)
         end
       end

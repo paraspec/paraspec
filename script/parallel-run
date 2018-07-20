@@ -2,14 +2,14 @@
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'psr'
+require 'paraspec'
 require 'byebug'
 require 'ostruct'
 require 'drb/drb'
 require 'rspec'
 require 'forwardable'
 
-#Psr.logger.level = Logger::DEBUG
+#Paraspec.logger.level = Logger::DEBUG
 
 $queue = []
 
@@ -247,7 +247,7 @@ else
 end
 RSpec.configuration.files_or_directories_to_run = files
 
-supervisor = Psr::Supervisor.new(concurrency: 8)
+supervisor = Paraspec::Supervisor.new(concurrency: 8)
 supervisor.run
 exit 4
 

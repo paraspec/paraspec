@@ -1,7 +1,7 @@
 require 'forwardable'
 require 'singleton'
 
-module Psr
+module Paraspec
   class RSpecFacade
     include Singleton
 

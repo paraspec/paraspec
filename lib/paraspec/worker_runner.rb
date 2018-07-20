@@ -1,4 +1,4 @@
-module Psr
+module Paraspec
   # An RSpec test runner - in a worker process.
   # This runner collects results and output and forwards them to the
   # master process via DRb.
@@ -45,7 +45,7 @@ module Psr
     private def runner
       @runner ||= begin
         options = RSpec::Core::ConfigurationOptions.new(ARGV)
-        options.options[:formatters] = [['Psr::WorkerFormatter']]
+        options.options[:formatters] = [['Paraspec::WorkerFormatter']]
         RSpec::Core::Runner.new(options)
       end
     end

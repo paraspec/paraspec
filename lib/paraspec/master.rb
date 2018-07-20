@@ -1,4 +1,4 @@
-module Psr
+module Paraspec
   # The master process has three responsibilities:
   # 1. Load all tests and abort the run if there are errors outside of
   #    examples.

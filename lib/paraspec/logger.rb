@@ -1,6 +1,6 @@
 require 'logger'
 
-module Psr
+module Paraspec
   class << self
     attr_accessor :logger
   end

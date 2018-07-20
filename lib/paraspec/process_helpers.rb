@@ -1,4 +1,4 @@
-module Psr
+module Paraspec
   module ProcessHelpers
     def kill_child_processes
       # Only kill if we are in supervisor

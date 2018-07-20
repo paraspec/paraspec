@@ -1,4 +1,4 @@
-module Psr
+module Paraspec
   # A worker process obtains a test to run from the master, runs the
   # test and reports the results, as well as any output, back to the master,
   # then obtains the next test to run and so on.
@@ -26,13 +26,13 @@ module Psr
       runner = WorkerRunner.new(master: @master)
 
       while true
-        Psr.logger.debug("#{ident} Requesting a spec")
+        Paraspec.logger.debug("#{ident} Requesting a spec")
         spec = @master.get_spec
-        Psr.logger.debug("#{ident} Got spec #{spec || 'nil'}")
+        Paraspec.logger.debug("#{ident} Got spec #{spec || 'nil'}")
         break if spec.nil?
-        Psr.logger.debug("#{ident} Running spec #{spec}")
+        Paraspec.logger.debug("#{ident} Running spec #{spec}")
         runner.run(spec)
-        Psr.logger.debug("#{ident} Finished running spec #{spec}")
+        Paraspec.logger.debug("#{ident} Finished running spec #{spec}")
       end
     end
 

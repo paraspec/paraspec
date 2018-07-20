@@ -1,6 +1,6 @@
 require 'timeout'
 
-module Psr
+module Paraspec
   module DrbHelpers
     class TimeoutWrapper < BasicObject
       def initialize(target, timeout)
@@ -32,20 +32,20 @@ module Psr
     # no exceptions or output of any sort.
     private def drb_connect(uri)
       start_time = Time.now
-      Psr.logger.debug("#{ident} Connecting to DRb")
+      Paraspec.logger.debug("#{ident} Connecting to DRb")
       remote = TimeoutWrapper.new(DRbObject.new_with_uri(uri), 2)
-      Psr.logger.debug("#{ident} Waiting for DRb")
+      Paraspec.logger.debug("#{ident} Waiting for DRb")
       begin
         # Assumes remote has a ping method
         remote.ping
       rescue DRb::DRbConnError, TypeError
         raise if Time.now - start_time > 5
         sleep 0.5
-        Psr.logger.debug("#{ident} Retrying DRb ping")
+        Paraspec.logger.debug("#{ident} Retrying DRb ping")
         retry
       rescue Timeout::Error
         raise if Time.now - start_time > 5
-        Psr.logger.debug("#{ident} Reconnecting to DRb")
+        Paraspec.logger.debug("#{ident} Reconnecting to DRb")
         remote = TimeoutWrapper.new(DRbObject.new_with_uri(uri), 2)
         retry
       end

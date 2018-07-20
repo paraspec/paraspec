@@ -1,6 +1,6 @@
 require 'rspec/core'
 
-module Psr
+module Paraspec
   class WorkerFormatter
     RSpec::Core::Formatters.register self,
       :start,
