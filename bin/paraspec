@@ -4,8 +4,27 @@ $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'byebug'
 require 'paraspec'
+require 'optparse'
 
-#Paraspec.logger.level = Logger::DEBUG
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: paraspec [options] [-- [rspec-options]...]'
+
+  opts.on('-c', '--concurrency=NUM', 'Number of concurrent workers to use') do |v|
+    if v.to_i == 0
+      raise "Invalid concurrency value: #{v}"
+    end
+    options[:concurrency] = v.to_i
+  end
+
+  opts.on('-d', '--debug', 'Output debugging information') do |v|
+    options[:debug] = v
+  end
+end.parse!
+
+if options[:debug]
+  Paraspec.logger.level = Logger::DEBUG
+end
 
 files = if ARGV.length > 0
   ARGV
@@ -14,5 +33,5 @@ else
 end
 RSpec.configuration.files_or_directories_to_run = files
 
-supervisor = Paraspec::Supervisor.new(concurrency: 8)
+supervisor = Paraspec::Supervisor.new(concurrency: options[:concurrency] || 4)
 supervisor.run
