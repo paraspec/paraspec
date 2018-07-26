@@ -59,5 +59,23 @@ describe 'Simple tests' do
         result.output.should include('is beautiful two')
       end
     end
+
+    context 'with debug logging' do
+      let(:result) { run_paraspec_in_fixture('one-file-suite',
+        '-d', '-c', '2') }
+
+      it 'works' do
+        result.exit_code.should == 0
+        result.output.should include('5 examples, 0 failures')
+      end
+
+      it 'runs tests in two workers' do
+        result.exit_code.should == 0
+        result.errput.should include('[w1] Got spec')
+        result.errput.should include('[w1] Finished running spec')
+        result.errput.should include('[w2] Got spec')
+        result.errput.should include('[w2] Finished running spec')
+      end
+    end
   end
 end
