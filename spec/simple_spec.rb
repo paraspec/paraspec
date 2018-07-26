@@ -78,4 +78,22 @@ describe 'Simple tests' do
       end
     end
   end
+
+  context 'error outside examples' do
+    let(:result) { run_paraspec_in_fixture('error-outside-examples', '-c', '1') }
+
+    it 'fails' do
+      result.exit_code.should > 0
+      result.output.should include('0 examples, 0 failures, 1 error occurred outside of examples')
+    end
+  end
+
+  context 'syntax error outside examples' do
+    let(:result) { run_paraspec_in_fixture('syntax-error-outside-examples', '-c', '1') }
+
+    it 'fails' do
+      result.exit_code.should > 0
+      result.output.should include('0 examples, 0 failures, 1 error occurred outside of examples')
+    end
+  end
 end
