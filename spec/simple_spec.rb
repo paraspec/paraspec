@@ -33,7 +33,7 @@ describe 'Simple tests' do
 
   context 'with concurrency 2' do
     context 'single file test suite' do
-      let(:result) { run_paraspec_in_fixture('one-file-suite', '-c', '1') }
+      let(:result) { run_paraspec_in_fixture('one-file-suite', '-c', '2') }
 
       it 'succeeds' do
         result.exit_code.should == 0
@@ -47,7 +47,7 @@ describe 'Simple tests' do
     end
 
     context 'with custom formatter' do
-      let(:result) { run_paraspec_in_fixture('one-file-suite', '-c', '1', '--', '-fd') }
+      let(:result) { run_paraspec_in_fixture('one-file-suite', '-c', '2', '--', '-fd') }
 
       it 'works' do
         result.exit_code.should == 0
