@@ -11,3 +11,13 @@ describe 'Sample' do
     expect(true).to be true
   end
 end
+
+describe 'Another group' do
+  it 'is excellent' do
+    expect(true).to be true
+  end
+
+  it 'is excellent two' do
+    expect(true).to be true
+  end
+end
