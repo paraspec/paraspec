@@ -41,7 +41,7 @@ module Paraspec
     def run_supervisor
     #p :run_supe
       start_time = Time.now
-      @master = drb_connect(MASTER_DRB_URI)
+      @master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
       if @master.non_example_exception_count > 0
         @master.dump_summary

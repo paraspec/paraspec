@@ -14,6 +14,7 @@ module Paraspec
       if RSpec.world.example_groups.count > 0
         raise 'Example groups loaded too early/spilled across processes'
       end
+      @terminal = options[:terminal]
 
       #RSpec.configuration.load_spec_files
       # possibly need to signal to supervisor when we are ready to
@@ -23,7 +24,7 @@ module Paraspec
 
     def run
     #puts "worker: #{Process.pid} #{Process.getpgrp}"
-      @master = drb_connect(MASTER_DRB_URI)
+      @master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
       runner = WorkerRunner.new(master: @master)
 
