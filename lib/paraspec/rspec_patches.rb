@@ -17,3 +17,7 @@ class RSpec::Core::World
     end
   end
 end
+
+class RSpec::Core::Reporter
+  attr_reader :non_example_exception_count
+end

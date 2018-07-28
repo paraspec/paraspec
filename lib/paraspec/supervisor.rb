@@ -13,10 +13,14 @@ module Paraspec
       @original_process_title = $0
       $0 = "#{@original_process_title} [supervisor]"
       @concurrency = options[:concurrency] || 1
+      @terminal = options[:terminal]
     end
 
     def run
-      Process.setpgrp
+      unless @terminal
+        Process.setpgrp
+      end
+
       at_exit { kill_child_processes }
 
       rd, wr = IO.pipe
@@ -29,7 +33,8 @@ module Paraspec
         # child - master
         $0 = "#{@original_process_title} [master]"
         rd.close
-        Master.new(:supervisor_pipe => wr).run
+        master = Master.new(:supervisor_pipe => wr)
+        master.run
       end
     end
 
@@ -38,7 +43,13 @@ module Paraspec
       start_time = Time.now
       @master = drb_connect(MASTER_DRB_URI)
 
-      @master.start
+      if @master.non_example_exception_count > 0
+        @master.dump_summary
+        @master.stop
+        exit 1
+      end
+
+      @master.suite_started
       #DRb.stop_service
 
       if @master.suite_ok?
@@ -73,7 +84,7 @@ module Paraspec
 
       @master.dump_summary
 
-      @master.exit
+      @master.stop
       wait_for_process(@master_pid)
     end
 

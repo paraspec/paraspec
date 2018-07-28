@@ -20,6 +20,10 @@ OptionParser.new do |opts|
   opts.on('-d', '--debug', 'Output debugging information') do |v|
     options[:debug] = v
   end
+
+  opts.on('-T', '--terminal', 'Retain controlling terminal (debug only)') do |v|
+    options[:terminal] = v
+  end
 end.parse!
 
 if options[:debug]
@@ -35,5 +39,8 @@ end
 RSpec.configuration.files_or_directories_to_run = files
 =end
 
-supervisor = Paraspec::Supervisor.new(concurrency: options[:concurrency] || 4)
+supervisor = Paraspec::Supervisor.new(
+  concurrency: options[:concurrency] || 4,
+  terminal: options[:terminal],
+)
 supervisor.run

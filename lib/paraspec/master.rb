@@ -30,13 +30,19 @@ module Paraspec
         RSpec.configuration.load_spec_files
       end
 =end
-#p ['aa1',RSpec.configuration.files_to_run]
 
       RSpec.configuration.load_spec_files
-      @queue = [] + RSpecFacade.all_example_groups
-      #byebug
-      puts "#{@queue.length} example groups queued"
+      @non_example_exception_count = RSpec.world.reporter.non_example_exception_count
+      @queue = []
+      if @non_example_exception_count == 0
+        @queue += RSpecFacade.all_example_groups
+        puts "#{@queue.length} example groups queued"
+      else
+        puts "#{@non_example_exception_count} errors outside of examples, aborting"
+      end
     end
+
+    attr :non_example_exception_count
 
     def run
 #    puts "master: #{Process.pid} #{Process.getpgrp}"
@@ -51,7 +57,7 @@ module Paraspec
       true
     end
 
-    def exit
+    def stop
       @stop = true
     end
 
@@ -110,12 +116,11 @@ module Paraspec
       @reporter ||= RSpec.configuration.reporter
     end
 
-    def start
+    def suite_started
       @start_time = Time.now
     end
 
     def dump_summary
-    #byebug
       all_examples = RSpecFacade.all_examples
       notification = RSpec::Core::Notifications::SummaryNotification.new(
         @start_time ? Time.now-@start_time : 0,
@@ -123,7 +128,7 @@ module Paraspec
         all_examples.select { |e| e.execution_result.status == :failed },
         all_examples.select { |e| e.execution_result.status == :pending },
         0,
-        0,
+        non_example_exception_count,
       )
       #p notification
       examples_notification = RSpec::Core::Notifications::ExamplesNotification.new(reporter)
