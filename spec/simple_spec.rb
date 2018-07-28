@@ -84,7 +84,8 @@ describe 'Simple tests' do
 
     it 'fails' do
       result.exit_code.should > 0
-      result.output.should include('0 examples, 0 failures, 1 error occurred outside of examples')
+      # We load the examples, hence the example count is greater than zero here
+      result.output.should include('1 example, 0 failures, 1 error occurred outside of examples')
     end
   end
 

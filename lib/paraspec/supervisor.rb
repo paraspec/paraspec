@@ -46,6 +46,7 @@ module Paraspec
       if @master.non_example_exception_count > 0
         @master.dump_summary
         @master.stop
+        wait_for_process(@master_pid)
         exit 1
       end
 
