@@ -3,6 +3,8 @@ require 'socket'
 
 module Paraspec
   class MsgpackClient
+    include MsgpackHelpers
+
     def initialize(options={})
       @terminal = options[:terminal]
 
@@ -21,11 +23,16 @@ module Paraspec
 
     def request(action, payload=nil)
       req = {action: action, payload: payload}
-      msg = MessagePack.pack(req)
       p req
+      msg = packer.pack(req)
       p msg
       @socket.write(msg)
-      response = MessagePack::Unpacker.new(@socket).unpack
+      response = unpacker(@socket).unpack
+      if Hash === response
+        response = IpcHash.new.merge(response)
+      end
+      p [:rrr,response]
+      response
     end
   end
 end

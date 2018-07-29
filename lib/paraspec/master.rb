@@ -48,7 +48,8 @@ module Paraspec
 #    puts "master: #{Process.pid} #{Process.getpgrp}"
       #p :start
       Thread.new do
-        HttpServer.set(:master, self).run!(port: 6031)
+        #HttpServer.set(:master, self).run!(port: 6031)
+        MsgpackServer.new(self).run
       end
       until @stop
         sleep 1
@@ -61,6 +62,10 @@ module Paraspec
 
     def stop
       @stop = true
+    end
+
+    def stop?
+      @stop
     end
 
     def suite_ok?

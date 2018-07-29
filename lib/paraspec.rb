@@ -17,4 +17,5 @@ module Paraspec
   autoload :HttpServer, 'paraspec/http_server'
   autoload :MsgpackClient, 'paraspec/msgpack_client'
   autoload :MsgpackServer, 'paraspec/msgpack_server'
+  autoload :MsgpackHelpers, 'paraspec/msgpack_helpers'
 end
