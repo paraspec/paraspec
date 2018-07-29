@@ -57,7 +57,8 @@ module Paraspec
 =end
 
     def master_client
-      @master_client ||= HttpClient.new
+      # TODO pass terminal option
+      @master_client ||= MsgpackClient.new
     end
 
   end

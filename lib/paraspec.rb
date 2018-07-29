@@ -15,4 +15,6 @@ require 'paraspec/rspec_facade'
 module Paraspec
   autoload :HttpClient, 'paraspec/http_client'
   autoload :HttpServer, 'paraspec/http_server'
+  autoload :MsgpackClient, 'paraspec/msgpack_client'
+  autoload :MsgpackServer, 'paraspec/msgpack_server'
 end

@@ -31,7 +31,7 @@ module Paraspec
         end
         JSON.parse(resp.body)
       rescue Faraday::ConnectionFailed
-        if Time.now - start_time > DrbHelpers::WAIT_TIME
+        if !@terminal && Time.now - start_time > DrbHelpers::WAIT_TIME
           raise
         else
           sleep 0.1
