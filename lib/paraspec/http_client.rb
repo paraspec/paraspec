@@ -1,3 +1,5 @@
+require 'json'
+
 module Paraspec
   class HttpClient
     def initialize(options={})
