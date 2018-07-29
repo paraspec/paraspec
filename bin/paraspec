@@ -39,8 +39,13 @@ end
 RSpec.configuration.files_or_directories_to_run = files
 =end
 
+concurrency = if options[:terminal]
+  1
+else
+  options[:concurrency] || 4
+end
 supervisor = Paraspec::Supervisor.new(
-  concurrency: options[:concurrency] || 4,
+  concurrency: concurrency,
   terminal: options[:terminal],
 )
 supervisor.run

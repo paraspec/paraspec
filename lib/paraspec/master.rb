@@ -47,7 +47,9 @@ module Paraspec
     def run
 #    puts "master: #{Process.pid} #{Process.getpgrp}"
       #p :start
-      DRb.start_service(MASTER_DRB_URI, self)
+      Thread.new do
+        MasterApp.set(:master, self).run!(port: 6031)
+      end
       until @stop
         sleep 1
       end
@@ -101,6 +103,10 @@ module Paraspec
     end
 
     def find_example(spec)
+      if spec.nil?
+        byebug
+        raise ArgumentError, 'Nil spec'
+      end
       example = RSpecFacade.all_examples.detect do |example|
         example.metadata[:file_path] == spec[:file_path] &&
         example.metadata[:scoped_id] == spec[:scoped_id]

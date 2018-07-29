@@ -19,7 +19,7 @@ module Paraspec
       :close
 
     def initialize(output)
-      @master = output.master
+      @master_client = output.master_client
     end
 
     def start(notification)
@@ -53,7 +53,13 @@ module Paraspec
       }
       #byebug
       #p :a
-      @master.example_passed(spec, notification.example.execution_result)
+      execution_result = notification.example.execution_result
+      serialized_er = {}
+      %w(started_at finished_at run_time status).each do |field|
+        serialized_er[field] = execution_result.send(field)
+      end
+      @master_client.post_json('/example-passed',
+        spec: spec, result: serialized_er)
       #b :b
       #1
     end

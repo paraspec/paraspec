@@ -4,15 +4,15 @@ module Paraspec
   # master process via DRb.
   class WorkerRunner
     def initialize(options={})
-      @master = options[:master]
+      @master_client = options[:master_client]
 
       # TODO capture stdout & stderr
       class << STDERR
-        def master
-          @master
+        def master_client
+          @master_client
         end
       end
-      STDERR.send(:instance_variable_set, '@master', @master)
+      STDERR.send(:instance_variable_set, '@master_client', @master_client)
       runner.setup(STDOUT, STDERR)
     end
 

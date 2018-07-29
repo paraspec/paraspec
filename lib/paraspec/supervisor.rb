@@ -1,4 +1,4 @@
-require 'drb/drb'
+require 'faraday'
 
 module Paraspec
   # Supervisor is the process that spawns all other processes.
@@ -41,19 +41,11 @@ module Paraspec
     def run_supervisor
     #p :run_supe
       start_time = Time.now
-      @master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
+      #@master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
-      if @master.non_example_exception_count > 0
-        @master.dump_summary
-        @master.stop
-        wait_for_process(@master_pid)
-        exit 1
-      end
+      if master_client.get_json('/non-example-exception-count').to_i == 0
+        master_client.post('/suite-started')
 
-      @master.suite_started
-      #DRb.stop_service
-
-      if @master.suite_ok?
         @worker_pipes = []
         @worker_pids = []
 
@@ -81,12 +73,15 @@ module Paraspec
           Paraspec.logger.debug("[s] Waiting for worker #{i+1} at #{pid}")
           wait_for_process(pid)
         end
+        status = 0
+      else
+        status = 1
       end
 
-      @master.dump_summary
-
-      @master.stop
+      master_client.post('/dump-summary')
+      master_client.post('/stop')
       wait_for_process(@master_pid)
+      exit status
     end
 
     def wait_for_process(pid)

@@ -24,15 +24,15 @@ module Paraspec
 
     def run
     #puts "worker: #{Process.pid} #{Process.getpgrp}"
-      @master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
+      #@master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
-      runner = WorkerRunner.new(master: @master)
+      runner = WorkerRunner.new(master_client: master_client)
 
       while true
         Paraspec.logger.debug("#{ident} Requesting a spec")
-        spec = @master.get_spec
+        spec = IpcHash.new.merge(master_client.post_json('/next-spec'))
         Paraspec.logger.debug("#{ident} Got spec #{spec || 'nil'}")
-        break if spec.nil?
+        break if spec.empty?
         Paraspec.logger.debug("#{ident} Running spec #{spec}")
         runner.run(spec)
         Paraspec.logger.debug("#{ident} Finished running spec #{spec}")
