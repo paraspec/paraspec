@@ -43,8 +43,10 @@ RSpec.configuration.files_or_directories_to_run = files
 if options[:terminal]
   options[:concurrency] = 1
 end
-if options.delete(:debug_ipc)
-  Paraspec.logger.log_ipc = true
+%w(ipc state).each do |subsystem|
+  if options.delete(:"debug_#{subsystem}")
+    Paraspec.logger.send("log_#{subsystem}=", true)
+  end
 end
 supervisor = Paraspec::Supervisor.new(options)
 supervisor.run

@@ -10,7 +10,7 @@ module Paraspec
       @logger.send(m, *args)
     end
 
-    %w(ipc).each do |subsystem|
+    %w(ipc state).each do |subsystem|
       define_method "log_#{subsystem}=" do |v|
         @subsystems ||= {}
         @subsystems[subsystem] = v

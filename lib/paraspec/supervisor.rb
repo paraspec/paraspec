@@ -69,9 +69,9 @@ module Paraspec
           end
         end
 
-        Paraspec.logger.debug("[s] Waiting for workers")
+        Paraspec.logger.debug_state("Waiting for workers")
         @worker_pids.each_with_index do |pid, i|
-          Paraspec.logger.debug("[s] Waiting for worker #{i+1} at #{pid}")
+          Paraspec.logger.debug_state("Waiting for worker #{i+1} at #{pid}")
           wait_for_process(pid)
         end
         status = 0

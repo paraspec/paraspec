@@ -29,16 +29,16 @@ module Paraspec
       runner = WorkerRunner.new(master_client: master_client)
 
       while true
-        Paraspec.logger.debug("#{ident} Requesting a spec")
+        Paraspec.logger.debug_state("Requesting a spec")
         spec = master_client.request('get-spec')
-        Paraspec.logger.debug("#{ident} Got spec #{spec || 'nil'}")
+        Paraspec.logger.debug_state("Got spec #{spec || 'nil'}")
         # HTTP transport returns no spec as an empty hash,
         # msgpack transport returns as nil
         break if spec.nil? || spec.empty?
         spec = IpcHash.new.merge(spec)
-        Paraspec.logger.debug("#{ident} Running spec #{spec}")
+        Paraspec.logger.debug_state("Running spec #{spec}")
         runner.run(spec)
-        Paraspec.logger.debug("#{ident} Finished running spec #{spec}")
+        Paraspec.logger.debug_state("Finished running spec #{spec}")
       end
     end
 
