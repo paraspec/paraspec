@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Simple tests' do
+describe 'Integration tests' do
   context 'with concurrency 1' do
     context 'single file test suite' do
       let(:result) { run_paraspec_in_fixture('one-file-suite', '-c', '1') }
