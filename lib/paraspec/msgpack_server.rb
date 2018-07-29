@@ -33,7 +33,6 @@ module Paraspec
             pk.write(resp)
             pk.flush
             s.flush
-            puts "finished, stop=#{@master.stop?}"
 
             if @master.stop?
               exit 0

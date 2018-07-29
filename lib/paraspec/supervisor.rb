@@ -76,6 +76,7 @@ module Paraspec
         status = 1
       end
 
+      master_client.reconnect!
       puts "dumping summary"
       master_client.request('dump-summary')
       #byebug

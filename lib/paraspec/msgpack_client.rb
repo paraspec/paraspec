@@ -8,6 +8,37 @@ module Paraspec
     def initialize(options={})
       @terminal = options[:terminal]
 
+      connect
+    end
+
+    def request(action, payload=nil)
+      req = {action: action, payload: payload, id: request_id}
+      puts "CliReq:#{req[:id]} #{req}"
+      #p req
+      pk = packer(@socket)
+      pk.write(req)
+      pk.flush
+      response = unpacker(@socket).unpack
+      puts "CliRes:#{req[:id]} #{response}"
+      response = IpcHash.new.merge(response)
+    #p [:rrr,response]
+      response[:result]
+    end
+
+    def request_id
+      @request_num ||= 0
+      "#{$$}:#{@request_num += 1}"
+    end
+
+    # The socket doesn't stay operational after a fork even if the child
+    # process never uses it. Parent should reconnect after forking
+    # any children
+    def reconnect!
+      @socket.close
+      connect
+    end
+
+    private def connect
       start_time = Time.now
       begin
         @socket = TCPSocket.new('127.0.0.1', MASTER_APP_PORT)
@@ -19,26 +50,6 @@ module Paraspec
           retry
         end
       end
-    end
-
-    def request(action, payload=nil)
-      req = {action: action, payload: payload, id: request_id}
-      puts "CliReq:#{req[:id]} #{req}"
-      p req
-      pk = packer(@socket)
-      pk.write(req)
-      pk.flush
-      puts 'Waiting for response'
-      response = unpacker(@socket).unpack
-      puts "CliRes:#{req[:id]} #{response}"
-      response = IpcHash.new.merge(response)
-      p [:rrr,response]
-      response[:result]
-    end
-
-    def request_id
-      @request_num ||= 0
-      "#{$$}:#{@request_num += 1}"
     end
   end
 end
