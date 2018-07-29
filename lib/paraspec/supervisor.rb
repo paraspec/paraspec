@@ -43,7 +43,7 @@ module Paraspec
       start_time = Time.now
       #@master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
-      if master_client.get_json('/non-example-exception-count').to_i == 0
+      if master_client.post_json('/non-example-exception-count').to_i == 0
         master_client.post('/suite-started')
 
         @worker_pipes = []

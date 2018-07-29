@@ -66,10 +66,6 @@ module Paraspec
             client.options.timeout = DrbHelpers::WAIT_TIME
           end
           class << client
-            def get_json(url)
-              method_json(:get, url)
-            end
-
             def post_json(url, body=nil)
               method_json(:post, url, body)
             end

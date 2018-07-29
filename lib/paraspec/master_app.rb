@@ -2,7 +2,7 @@ require 'sinatra'
 
 module Paraspec
   class MasterApp < Sinatra::Base
-    get '/non-example-exception-count' do
+    post '/non-example-exception-count' do
       master = self.class.settings.master
       payload = master.non_example_exception_count
       content_type 'application/json'
