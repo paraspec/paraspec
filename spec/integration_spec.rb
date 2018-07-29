@@ -60,9 +60,9 @@ describe 'Integration tests' do
       end
     end
 
-    context 'with debug logging' do
+    context 'with state debug logging' do
       let(:result) { run_paraspec_in_fixture('one-file-suite',
-        '-d', '-c', '2') }
+        '-d', 'state', '-c', '2') }
 
       it 'works' do
         result.exit_code.should == 0
@@ -71,10 +71,10 @@ describe 'Integration tests' do
 
       it 'runs tests in two workers' do
         result.exit_code.should == 0
-        result.errput.should include('[w1] Got spec')
-        result.errput.should include('[w1] Finished running spec')
-        result.errput.should include('[w2] Got spec')
-        result.errput.should include('[w2] Finished running spec')
+        result.errput.should include('[w1] [state] Got spec')
+        result.errput.should include('[w1] [state] Finished running spec')
+        result.errput.should include('[w2] [state] Got spec')
+        result.errput.should include('[w2] [state] Finished running spec')
       end
     end
   end
