@@ -30,7 +30,7 @@ module Paraspec
 
       while true
         Paraspec.logger.debug("#{ident} Requesting a spec")
-        spec = IpcHash.new.merge(master_client.post_json('/next-spec'))
+        spec = IpcHash.new.merge(master_client.request('next-spec'))
         Paraspec.logger.debug("#{ident} Got spec #{spec || 'nil'}")
         break if spec.empty?
         Paraspec.logger.debug("#{ident} Running spec #{spec}")

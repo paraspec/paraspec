@@ -57,52 +57,8 @@ module Paraspec
 =end
 
     def master_client
-      @master_client ||= begin
-        Faraday.new(url: "http://localhost:#{Paraspec::MASTER_APP_PORT}") do |client|
-          client.adapter :net_http
-          if @terminal
-            client.options.timeout = 100000
-          else
-            client.options.timeout = DrbHelpers::WAIT_TIME
-          end
-          class << client
-            def post_json(url, body=nil)
-              method_json(:post, url, body)
-            end
-
-            def method_json(meth, url, body=nil)
-              start_time = Time.now
-              begin
-                resp = send(meth, url) do |req|
-                  if body
-                    req.headers['content-type'] = 'application/json'
-                    req.body = body.to_json
-                  end
-                end
-                if resp.status != 200
-                  raise "Request failed: #{url} (#{resp.status})"
-                end
-                JSON.parse(resp.body)
-              rescue Faraday::ConnectionFailed
-                if Time.now - start_time > DrbHelpers::WAIT_TIME
-                  raise
-                else
-                  sleep 0.1
-                  retry
-                end
-              end
-            end
-          end
-        end
-      end
+      @master_client ||= HttpClient.new
     end
 
-    def symbolize_keys(hash)
-      out = {}
-      hash.each do |k, v|
-        out[k.to_sym] = v
-      end
-      out
-    end
   end
 end

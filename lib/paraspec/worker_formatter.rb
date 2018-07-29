@@ -58,7 +58,7 @@ module Paraspec
       %w(started_at finished_at run_time status).each do |field|
         serialized_er[field] = execution_result.send(field)
       end
-      @master_client.post_json('/example-passed',
+      @master_client.request('example-passed',
         spec: spec, result: serialized_er)
       #b :b
       #1

@@ -43,8 +43,8 @@ module Paraspec
       start_time = Time.now
       #@master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
-      if master_client.post_json('/non-example-exception-count').to_i == 0
-        master_client.post('/suite-started')
+      if master_client.request('non-example-exception-count').to_i == 0
+        master_client.request('suite-started')
 
         @worker_pipes = []
         @worker_pids = []
@@ -78,8 +78,8 @@ module Paraspec
         status = 1
       end
 
-      master_client.post('/dump-summary')
-      master_client.post('/stop')
+      master_client.request('dump-summary')
+      master_client.request('stop')
       wait_for_process(@master_pid)
       exit status
     end

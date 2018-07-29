@@ -43,5 +43,10 @@ module Paraspec
       content_type 'application/json'
       payload.to_json
     end
+
+    post '/suite-started' do
+      content_type 'application/json'
+      {}.to_json
+    end
   end
 end
