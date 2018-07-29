@@ -48,7 +48,7 @@ module Paraspec
 #    puts "master: #{Process.pid} #{Process.getpgrp}"
       #p :start
       Thread.new do
-        MasterApp.set(:master, self).run!(port: 6031)
+        HttpServer.set(:master, self).run!(port: 6031)
       end
       until @stop
         sleep 1
@@ -79,7 +79,16 @@ module Paraspec
       }
     end
 
-    def example_passed(spec, execution_result)
+    def example_passed(payload)
+      spec = payload[:spec]
+      result = RSpec::Core::Example::ExecutionResult.new
+      payload[:result].each do |k, v|
+        result.send("#{k}=", v)
+      end
+      do_example_passed(spec, result)
+    end
+
+    def do_example_passed(spec, execution_result)
     #return
       example = find_example(spec)
       # Can write to example here
@@ -100,6 +109,7 @@ module Paraspec
       #end
       #byebug
       #p args
+      nil
     end
 
     def find_example(spec)
@@ -124,6 +134,7 @@ module Paraspec
 
     def suite_started
       @start_time = Time.now
+      true
     end
 
     def dump_summary
@@ -146,6 +157,7 @@ module Paraspec
         end
       end
       #p :fini, $$
+      nil
     end
 
     def ident

@@ -1,7 +1,27 @@
 require 'sinatra'
 
 module Paraspec
-  class MasterApp < Sinatra::Base
+  class HttpServer < Sinatra::Base
+    post '/:action' do
+      action = params[:action]
+      body = request.body.read
+      if body.empty?
+        args = []
+      else
+        payload = JSON.parse(body)
+        payload = IpcHash.new.merge(payload)
+        args = [payload]
+      end
+
+      master = self.class.settings.master
+      action = action.gsub('-', '_')
+      result = master.send(action, *args)
+
+      content_type 'application/json'
+      (result || {}).to_json
+    end
+
+=begin
     post '/non-example-exception-count' do
       master = self.class.settings.master
       payload = master.non_example_exception_count
@@ -48,5 +68,6 @@ module Paraspec
       content_type 'application/json'
       {}.to_json
     end
+=end
   end
 end
