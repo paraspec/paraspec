@@ -24,12 +24,12 @@ module Paraspec
               args = []
             end
 
-            puts "SrvReq:#{obj['id']} #{obj}"
+            Paraspec.logger.debug_ipc("SrvReq:#{obj['id']} #{obj}")
             result = @master.send(action, *args)
 
             pk = packer(s)
             resp = {result: result}
-            puts "SrvRes:#{obj['id']} #{resp}"
+            Paraspec.logger.debug_ipc("SrvRes:#{obj['id']} #{resp}")
             pk.write(resp)
             pk.flush
             s.flush

@@ -10,6 +10,7 @@ module Paraspec
     def initialize(options={})
       @original_process_title = $0
       $0 = "#{@original_process_title} [supervisor]"
+      Paraspec.logger.ident = '[s]'
       @concurrency = options[:concurrency] || 1
       @terminal = options[:terminal]
     end
@@ -30,6 +31,7 @@ module Paraspec
       else
         # child - master
         $0 = "#{@original_process_title} [master]"
+        Paraspec.logger.ident = '[m]'
         rd.close
         master = Master.new(:supervisor_pipe => wr)
         master.run
@@ -57,6 +59,7 @@ module Paraspec
           else
             # child - worker
             $0 = "#{@original_process_title} [worker-#{i}]"
+            Paraspec.logger.ident = "[w#{i}]"
             rd.close
             if RSpec.world.example_groups.count > 0
               raise 'Example groups loaded too early/spilled across processes'

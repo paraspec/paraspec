@@ -17,8 +17,9 @@ OptionParser.new do |opts|
     options[:concurrency] = v.to_i
   end
 
-  opts.on('-d', '--debug', 'Output debugging information') do |v|
-    options[:debug] = v
+  opts.on('-d', '--debug=SUBSYSTEM', 'Output debugging information for SUBSYSTEM') do |v|
+    options[:"debug_#{v}"] = true
+    options[:debug] = true
   end
 
   opts.on('-T', '--terminal', 'Retain controlling terminal (debug only)') do |v|
@@ -39,13 +40,11 @@ end
 RSpec.configuration.files_or_directories_to_run = files
 =end
 
-concurrency = if options[:terminal]
-  1
-else
-  options[:concurrency] || 4
+if options[:terminal]
+  options[:concurrency] = 1
 end
-supervisor = Paraspec::Supervisor.new(
-  concurrency: concurrency,
-  terminal: options[:terminal],
-)
+if options.delete(:debug_ipc)
+  Paraspec.logger.log_ipc = true
+end
+supervisor = Paraspec::Supervisor.new(options)
 supervisor.run
