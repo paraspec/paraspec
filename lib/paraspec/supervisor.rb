@@ -1,5 +1,3 @@
-require 'faraday'
-
 module Paraspec
   # Supervisor is the process that spawns all other processes.
   # Its primary responsibility is to be a "clean slate", specifically
