@@ -22,17 +22,23 @@ module Paraspec
     end
 
     def request(action, payload=nil)
-      req = {action: action, payload: payload}
+      req = {action: action, payload: payload, id: request_id}
+      puts "CliReq:#{req[:id]} #{req}"
       p req
-      msg = packer.pack(req)
-      p msg
-      @socket.write(msg)
+      pk = packer(@socket)
+      pk.write(req)
+      pk.flush
+      puts 'Waiting for response'
       response = unpacker(@socket).unpack
-      if Hash === response
-        response = IpcHash.new.merge(response)
-      end
+      puts "CliRes:#{req[:id]} #{response}"
+      response = IpcHash.new.merge(response)
       p [:rrr,response]
-      response
+      response[:result]
+    end
+
+    def request_id
+      @request_num ||= 0
+      "#{$$}:#{@request_num += 1}"
     end
   end
 end

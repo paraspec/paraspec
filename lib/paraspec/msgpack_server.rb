@@ -24,10 +24,16 @@ module Paraspec
               args = []
             end
 
+            puts "SrvReq:#{obj['id']} #{obj}"
             result = @master.send(action, *args)
 
-            packed = packer.pack(result)
-            s.write(packed)
+            pk = packer(s)
+            resp = {result: result}
+            puts "SrvRes:#{obj['id']} #{resp}"
+            pk.write(resp)
+            pk.flush
+            s.flush
+            puts "finished, stop=#{@master.stop?}"
 
             if @master.stop?
               exit 0

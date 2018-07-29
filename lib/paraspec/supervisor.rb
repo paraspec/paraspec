@@ -76,7 +76,10 @@ module Paraspec
         status = 1
       end
 
+      puts "dumping summary"
       master_client.request('dump-summary')
+      #byebug
+      puts "trying to stop master"
       master_client.request('stop')
       wait_for_process(@master_pid)
       exit status

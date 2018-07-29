@@ -3,8 +3,8 @@ require 'time'
 module Paraspec
   module MsgpackHelpers
 
-    def packer
-      pk = MessagePack::Packer.new
+    def packer(io)
+      pk = MessagePack::Packer.new(io)
       pk.register_type(1, Time) do |time|
         time.to_s
       end

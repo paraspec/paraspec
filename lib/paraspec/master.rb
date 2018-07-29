@@ -61,6 +61,8 @@ module Paraspec
     end
 
     def stop
+    puts "stopping"
+    #byebug
       @stop = true
     end
 
@@ -162,6 +164,7 @@ module Paraspec
         end
       end
       #p :fini, $$
+      #byebug
       nil
     end
 
