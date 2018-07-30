@@ -1,3 +1,4 @@
+require 'benchmark'
 require 'msgpack'
 require 'socket'
 
@@ -28,24 +29,28 @@ module Paraspec
       Thread.new do
         u = unpacker(s)
         u.each do |obj|
-          action = obj['action'].gsub('-', '_')
-          payload = obj['payload']
-          if payload
-            payload = IpcHash.new.merge(payload)
-            args = [payload]
-          else
-            args = []
+          result = nil
+          time = Benchmark.realtime do
+            action = obj['action'].gsub('-', '_')
+            payload = obj['payload']
+            if payload
+              payload = IpcHash.new.merge(payload)
+              args = [payload]
+            else
+              args = []
+            end
+
+            Paraspec.logger.debug_ipc("SrvReq:#{obj['id']} #{obj}")
+            result = @master.send(action, *args)
+
+            pk = packer(s)
+            resp = {result: result}
+            Paraspec.logger.debug_ipc("SrvRes:#{obj['id']} #{resp}")
+            pk.write(resp)
+            pk.flush
+            s.flush
           end
-
-          Paraspec.logger.debug_ipc("SrvReq:#{obj['id']} #{obj}")
-          result = @master.send(action, *args)
-
-          pk = packer(s)
-          resp = {result: result}
-          Paraspec.logger.debug_ipc("SrvRes:#{obj['id']} #{resp}")
-          pk.write(resp)
-          pk.flush
-          s.flush
+          Paraspec.logger.debug_perf("SrvReq:#{obj['id']} #{obj['action']}: #{result} #{'%.3f msec' % (time*1000)}")
         end
       end
     end
