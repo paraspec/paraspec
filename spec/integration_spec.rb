@@ -106,4 +106,13 @@ describe 'Integration tests' do
       result.output.should include('1 example, 0 failures, 1 pending')
     end
   end
+
+  context 'failing example' do
+    let(:result) { run_paraspec_in_fixture('failing-example', '-c', '1') }
+
+    it 'fails' do
+      result.exit_code.should == 1
+      result.output.should include('1 example, 1 failure')
+    end
+  end
 end

@@ -88,13 +88,8 @@ module Paraspec
 
     def example_passed(payload)
       spec = payload[:spec]
-      result = RSpec::Core::Example::ExecutionResult.new
-      payload[:result].each do |k, v|
-        if k == 'status'
-          v = v.to_sym
-        end
-        result.send("#{k}=", v)
-      end
+      # ExecutionResult
+      result = payload['result']
       do_example_passed(spec, result)
     end
 
@@ -169,6 +164,14 @@ module Paraspec
       #p :fini, $$
       #byebug
       nil
+    end
+
+    def status
+      if RSpecFacade.all_examples.any? { |example| example.execution_result.status == :failed }
+        1
+      else
+        0
+      end
     end
 
     def ident

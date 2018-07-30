@@ -54,12 +54,8 @@ module Paraspec
       #byebug
       #p :a
       execution_result = notification.example.execution_result
-      serialized_er = {}
-      %w(started_at finished_at run_time status).each do |field|
-        serialized_er[field] = execution_result.send(field)
-      end
       @master_client.request('example-passed',
-        spec: spec, result: serialized_er)
+        spec: spec, result: execution_result)
       #b :b
       #1
     end

@@ -82,6 +82,9 @@ module Paraspec
       master_client.reconnect!
       puts "dumping summary"
       master_client.request('dump-summary')
+      if status == 0
+        status = master_client.request('status')
+      end
       #byebug
       puts "trying to stop master"
       master_client.request('stop')
