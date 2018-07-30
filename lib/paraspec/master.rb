@@ -90,6 +90,9 @@ module Paraspec
       spec = payload[:spec]
       result = RSpec::Core::Example::ExecutionResult.new
       payload[:result].each do |k, v|
+        if k == 'status'
+          v = v.to_sym
+        end
         result.send("#{k}=", v)
       end
       do_example_passed(spec, result)
