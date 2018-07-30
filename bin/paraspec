@@ -2,6 +2,7 @@
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
+require 'ruby-prof'
 require 'byebug'
 require 'paraspec'
 require 'optparse'
@@ -48,5 +49,14 @@ end
     Paraspec.logger.send("log_#{subsystem}=", true)
   end
 end
+        #RubyProf.start
 supervisor = Paraspec::Supervisor.new(options)
 supervisor.run
+
+=begin
+        result = RubyProf.stop
+printer = RubyProf::FlatPrinter.new(result)
+File.open('profile.txt','w') do |f|
+printer.print(f)
+end
+=end

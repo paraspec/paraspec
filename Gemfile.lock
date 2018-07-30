@@ -28,6 +28,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
+    ruby-prof (0.17.0)
     sinatra (2.0.3)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -45,6 +46,7 @@ DEPENDENCIES
   hashie
   msgpack
   rspec
+  ruby-prof
   sinatra
 
 BUNDLED WITH
