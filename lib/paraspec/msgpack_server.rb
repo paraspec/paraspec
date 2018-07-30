@@ -11,8 +11,16 @@ module Paraspec
 
     def run
       @socket = ::TCPServer.new('127.0.0.1', MASTER_APP_PORT)
-      while s = @socket.accept
-        run_processing_thread(s)
+      begin
+        while true
+          s = @socket.accept_nonblock
+          run_processing_thread(s)
+        end
+      rescue Errno::EAGAIN
+        unless @master.stop?
+          sleep 0.2
+          retry
+        end
       end
     end
 
