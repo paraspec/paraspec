@@ -3,7 +3,7 @@ require 'rspec/core'
 module Paraspec
   class WorkerFormatter
     RSpec::Core::Formatters.register self,
-      :start,
+      #:start,
       :example_group_started,
       :example_started,
       :example_passed,
@@ -23,7 +23,19 @@ module Paraspec
     end
 
     def start(notification)
-      #p notification
+      # Worker formatter receives start notification for each example
+      # that it receives from supervisor.
+      # The start notification contains number of examples to be executed,
+      # and the load time.
+      # The number of examples isn't useful because this is a subset of
+      # all of the examples to be run, and we can't wait to receive
+      # start notifications from all workers in the master thus
+      # start notifications are not aggregatable.
+      # Loading time is something that master can figure out on its own.
+      # Therefore we do not forward start notifications to master.
+      # At the same time master must create and send start notifications
+      # to its own formatters, for example the junit formatter
+      # requires a start notification for the summary report to work.
     end
 
     def stop(notification)

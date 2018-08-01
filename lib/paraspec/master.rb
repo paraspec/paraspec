@@ -140,6 +140,16 @@ module Paraspec
 
     def suite_started
       @start_time = Time.now
+
+      notification = RSpec::Core::Notifications::StartNotification.new(
+        RSpecFacade.all_examples.count, 0
+      )
+      RSpec.configuration.formatters.each do |f|
+        if f.respond_to?(:start)
+          f.start(notification)
+        end
+      end
+
       true
     end
 
