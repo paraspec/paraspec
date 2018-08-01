@@ -192,4 +192,37 @@ describe 'Integration tests' do
       result.output.should include('1 example, 0 failures')
     end
   end
+
+  context 'hooks' do
+    let(:result) { run_paraspec_in_fixture('hooks', '-c', '1', '--', '-fd') }
+
+    it 'succeeds' do
+      result.exit_code.should == 0
+      result.output.should include('1 example, 0 failures')
+    end
+
+    it 'runs each describe hooks' do
+      result.exit_code.should == 0
+      result.output.should include('before each describe')
+      result.output.should include('after each describe')
+    end
+
+    it 'runs all describe hooks' do
+      result.exit_code.should == 0
+      result.output.should include('before all describe')
+      result.output.should include('after all describe')
+    end
+
+    it 'runs each shared context hooks' do
+      result.exit_code.should == 0
+      result.output.should include('before each shared context')
+      result.output.should include('after each shared context')
+    end
+
+    it 'runs all shared context hooks' do
+      result.exit_code.should == 0
+      result.output.should include('before all shared context')
+      result.output.should include('after all shared context')
+    end
+  end
 end
