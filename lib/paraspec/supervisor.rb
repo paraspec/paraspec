@@ -13,6 +13,7 @@ module Paraspec
       Paraspec.logger.ident = '[s]'
       @concurrency = options[:concurrency] || 1
       @terminal = options[:terminal]
+      @options = options
     end
 
     def run
@@ -31,6 +32,9 @@ module Paraspec
       else
         # child - master
         $0 = "#{@original_process_title} [master]"
+        if @options[:master_is_1]
+          ENV['TEST_ENV_NUMBER'] = '1'
+        end
         Paraspec.logger.ident = '[m]'
         rd.close
         master = Master.new(:supervisor_pipe => wr)

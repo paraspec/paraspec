@@ -25,6 +25,10 @@ OptionParser.new do |opts|
   opts.on('-T', '--terminal', 'Retain controlling terminal (debug only)') do |v|
     options[:terminal] = v
   end
+
+  opts.on('--master-is-1', 'Set TEST_ENV_NUMBER=1 in master process') do |v|
+    options[:master_is_1] = v
+  end
 end.parse!
 
 if options[:debug]
