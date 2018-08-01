@@ -99,15 +99,22 @@ module Paraspec
     end
 
     def get_spec
-    #p :getting_spec
-      example_group = @queue.shift
-      return nil if example_group.nil?
+      while true
+        example_group = @queue.shift
+        return nil if example_group.nil?
 
-      m = example_group.metadata
-      {
-        file_path: m[:file_path],
-        scoped_id: m[:scoped_id],
-      }
+        # TODO I am still not 100% on what should be filtered and pruned where,
+        # but we shouldn't be returning a specification here unless
+        # there are tests in it that a worker will run
+        pruned_examples = RSpec.configuration.filter_manager.prune(example_group.examples)
+        next if pruned_examples.empty?
+
+        m = example_group.metadata
+        return {
+          file_path: m[:file_path],
+          scoped_id: m[:scoped_id],
+        }
+      end
     end
 
     def example_passed(payload)

@@ -29,6 +29,7 @@ module Paraspec
       runner = WorkerRunner.new(master_client: master_client)
 
       # fill cache when pruning is not set up
+      RSpecFacade.all_example_groups
       RSpecFacade.all_examples
 
       while true
