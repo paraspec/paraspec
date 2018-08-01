@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'nokogiri'
 
 describe 'Integration tests' do
   context 'with concurrency 1' do
@@ -132,6 +133,33 @@ describe 'Integration tests' do
       it 'fails' do
         result.exit_code.should == 1
         result.output.should include('4 examples, 1 failure, 2 pending')
+      end
+    end
+
+    context 'concurrent run' do
+      let(:result) { run_paraspec_in_fixture('junit-formatter-concurrent', '-c', '2', '--') }
+
+      let(:tmp_dir_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'junit-formatter-concurrent', 'tmp') }
+
+      before do
+        FileUtils.rm_rf(tmp_dir_path)
+      end
+
+      it 'succeeds' do
+        result.exit_code.should == 0
+      end
+
+      it 'creates one junit xml output file' do
+        result
+        File.exist?(File.join(tmp_dir_path, 'rspec.xml')).should be true
+        File.exist?(File.join(tmp_dir_path, 'rspec1.xml')).should be false
+        File.exist?(File.join(tmp_dir_path, 'rspec2.xml')).should be false
+      end
+
+      it 'merges all results into one junit xml output file' do
+        result
+        doc = Nokogiri::HTML(File.read(File.join(tmp_dir_path, 'rspec.xml')))
+        doc.xpath('//testcase').count.should == 3
       end
     end
   end
