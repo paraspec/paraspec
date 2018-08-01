@@ -229,8 +229,20 @@ describe 'Integration tests' do
 
     it_behaves_like 'works correctly'
 
-    context 'invoking a single test' do
+    context 'with an expression filter' do
       let(:result) { run_paraspec_in_fixture('hooks', '-c', '1', '--', '-fd', '-e', 'succeeds') }
+
+      it_behaves_like 'works correctly'
+    end
+
+    context 'invoking a single test' do
+      let(:result) { run_paraspec_in_fixture('hooks', '-c', '1', '--', '-fd', 'spec/sample_spec.rb') }
+
+      it_behaves_like 'works correctly'
+    end
+
+    context 'with a subcontext' do
+      let(:result) { run_paraspec_in_fixture('hooks-subcontext', '-c', '1', '--', '-fd') }
 
       it_behaves_like 'works correctly'
     end

@@ -41,9 +41,14 @@ module Paraspec
       examples = RSpec.configuration.filter_manager.prune(examples)
       return if examples.empty?
       #p RSpec.world.filtered_examples.values.map(&:count)
-      runner.run_specs([group]).tap do
-        #persist_example_statuses
-      end
+      #RSpec.configuration.with_suite_hooks do
+      # It is important to run the entire world here because if
+      # a particular example group is run, before/after :all hooks
+      # aren't always run
+        runner.run_specs(RSpec.world.ordered_example_groups).tap do
+          #persist_example_statuses
+        end
+      #end
     end
 
     private def runner
