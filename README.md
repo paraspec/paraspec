@@ -80,9 +80,9 @@ and have byebug work. Setting this option also sets concurrency to 1.
 Paraspec can produce copious debugging output in several facilities.
 The debugging output is turned on with `-d`/`--debug` option:
 
-    paraspec -d state	# supervisor, master, worker state transitions
-    paraspec -d ipc	# IPC requests and responses
-    paraspec -d perf	# timing & performance information
+    paraspec -d state   # supervisor, master, worker state transitions
+    paraspec -d ipc     # IPC requests and responses
+    paraspec -d perf    # timing & performance information
 
 ## Bugs & Patches
 
