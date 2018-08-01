@@ -28,7 +28,7 @@ module Paraspec
       byebug
         raise "No example group for #{spec.inspect}"
       end
-      examples = RSpec.configuration.filter_manager.prune(group.examples)
+      examples = group.examples
       #Paraspec.logger.debug_state("Spec #{spec}: #{examples.length} examples")
       return if examples.empty?
       ids = examples.map { |e| e.metadata[:scoped_id] }
@@ -37,6 +37,8 @@ module Paraspec
       RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
       RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
       RSpec.world.filter_examples
+      examples = RSpec.configuration.filter_manager.prune(examples)
+      return if examples.empty?
       #p RSpec.world.filtered_examples.values.map(&:count)
       runner.run_specs([group]).tap do
         #persist_example_statuses
