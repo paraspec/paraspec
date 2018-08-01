@@ -38,6 +38,16 @@ To pass options to rspec, for example to filter examples to run:
     paraspec -- -e 'My test'
     paraspec -- spec/my_spec.rb
 
+For a test suite with external dependencies, paraspec sets the
+`TEST_ENV_NUMBER` environment variable, like
+[parallel_tests](https://github.com/grosser/parallel_tests) does.
+The test suite can then configure itself differently in each worker.
+
+By default the master process doesn't have `TEST_ENV_NUMBER` set.
+To have that set to `1` use `--master-is-1` option to paraspec:
+
+    paraspec --master-is-1
+
 ## Advanced Usage
 
 ### Formatters
@@ -56,7 +66,27 @@ occur. JUnit output, passed through a JUnit XML to HTML converter like
 than going through terminal output when a run produces 100 or 1000
 failing tests.
 
+### Debugging
+
+Paraspec offers several debugging aids. The first one is the terminal option:
+
+    paraspec -T
+
+This option makes paraspec stay attached to the same terminal it was
+launched in, making it possible to insert e.g. `byebug` calls in supervisor,
+master or worker code as well as anywhere in the test suite being executed
+and have byebug work. Setting this option also sets concurrency to 1.
+
+Paraspec can produce copious debugging output in several facilities.
+The debugging output is turned on with `-d`/`--debug` option:
+
+    paraspec -d state	# supervisor, master, worker state transitions
+    paraspec -d ipc	# IPC requests and responses
+    paraspec -d perf	# timing & performance information
+
 ## Bugs & Patches
+
+Please report via issues and pull requests.
 
 ## License
 
