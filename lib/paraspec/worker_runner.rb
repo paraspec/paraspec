@@ -25,6 +25,7 @@ module Paraspec
         g.metadata[:scoped_id] == spec[:scoped_id]
       end
       unless group
+        puts "No example group for #{spec.inspect}, #{RSpecFacade.all_example_groups.count} total groups"
       byebug
         raise "No example group for #{spec.inspect}"
       end

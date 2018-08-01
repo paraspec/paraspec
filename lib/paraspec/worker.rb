@@ -28,6 +28,9 @@ module Paraspec
 
       runner = WorkerRunner.new(master_client: master_client)
 
+      # fill cache when pruning is not set up
+      RSpecFacade.all_examples
+
       while true
         Paraspec.logger.debug_state("Requesting a spec")
         spec = master_client.request('get-spec')
