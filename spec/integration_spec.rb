@@ -155,4 +155,13 @@ describe 'Integration tests' do
       end
     end
   end
+
+  context 'shared examples in another file' do
+    let(:result) { run_paraspec_in_fixture('shared-examples', '-c', '1', '--', '-fd') }
+
+    it 'succeeds' do
+      result.exit_code.should == 0
+      result.output.should include('1 example, 0 failures')
+    end
+  end
 end
