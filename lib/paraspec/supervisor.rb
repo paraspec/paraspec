@@ -35,6 +35,7 @@ module Paraspec
         rd.close
         master = Master.new(:supervisor_pipe => wr)
         master.run
+        exit(0)
       end
     end
 
@@ -86,7 +87,7 @@ module Paraspec
         status = master_client.request('status')
       end
       #byebug
-      puts "trying to stop master"
+      Paraspec.logger.debug_state("Asking master to stop")
       master_client.request('stop')
       wait_for_process(@master_pid)
       exit status

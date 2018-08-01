@@ -54,6 +54,7 @@ module Paraspec
       until @stop
         sleep 1
       end
+      Paraspec.logger.debug_state("Exiting")
     end
 
     def ping
@@ -61,8 +62,8 @@ module Paraspec
     end
 
     def stop
-    puts "stopping"
     #byebug
+      Paraspec.logger.debug_state("Stopping")
       @stop = true
     end
 
