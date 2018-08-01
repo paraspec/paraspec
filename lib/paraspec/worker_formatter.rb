@@ -10,7 +10,7 @@ module Paraspec
       :example_failed,
       :example_pending,
       :message,
-      :stop,
+      #:stop,
       :start_dump,
       :dump_pending,
       :dump_failures,
@@ -39,7 +39,8 @@ module Paraspec
     end
 
     def stop(notification)
-      #p notification
+      # Stop notification doesn't carry any new information, thus
+      # master directly invokes reporter.stop from dump_summary.
     end
 
     def dump_summary(notification)
@@ -51,6 +52,11 @@ module Paraspec
     end
 
     def example_started(notification)
+      spec = {
+        file_path: notification.example.metadata[:file_path],
+        scoped_id: notification.example.metadata[:scoped_id],
+      }
+      @master_client.request('notify-example-started', spec: spec)
     end
 
     def example_passed(notification)

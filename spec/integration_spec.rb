@@ -115,4 +115,24 @@ describe 'Integration tests' do
       result.output.should include('1 example, 1 failure')
     end
   end
+
+  context 'test suite uses junit formatter' do
+    context 'successful test suite' do
+      let(:result) { run_paraspec_in_fixture('junit-formatter-successful', '-c', '1', '--', '-fd') }
+
+      it 'succeeds' do
+        result.exit_code.should == 0
+        result.output.should include('2 examples, 0 failures, 1 pending')
+      end
+    end
+
+    context 'failing test suite' do
+      let(:result) { run_paraspec_in_fixture('junit-formatter', '-c', '1', '--', '-fd') }
+
+      it 'succeeds' do
+        result.exit_code.should == 1
+        result.output.should include('4 examples, 1 failure, 2 pending')
+      end
+    end
+  end
 end

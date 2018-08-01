@@ -31,8 +31,19 @@ module Paraspec
       end
 =end
 
-      RSpec.configuration.load_spec_files
-      @non_example_exception_count = RSpec.world.reporter.non_example_exception_count
+      # It seems that load_spec_files sometimes rescues exceptions outside of
+      # examples and sometimes does not, handle it both ways
+      @non_example_exception_count = 0
+      begin
+        RSpec.configuration.load_spec_files
+      rescue Exception => e
+        puts "#{e.class}: #{e}"
+        puts e.backtrace.join("\n")
+        @non_example_exception_count = 1
+      end
+      if @non_example_exception_count == 0
+        @non_example_exception_count = RSpec.world.reporter.non_example_exception_count
+      end
       @queue = []
       if @non_example_exception_count == 0
         @queue += RSpecFacade.all_example_groups
@@ -94,6 +105,11 @@ module Paraspec
       do_example_passed(spec, result)
     end
 
+    def notify_example_started(payload)
+      example = find_example(payload[:spec])
+      reporter.example_started(example)
+    end
+
     def do_example_passed(spec, execution_result)
     #return
       example = find_example(spec)
@@ -106,6 +122,7 @@ module Paraspec
       #ii
       #p ['send', example.metadata[:scoped_id]]
         reporter.send(m, example)
+=begin
       notification = RSpec::Core::Notifications::ExampleNotification.for(example)
       RSpec.configuration.formatters.each do |f|
         if f.respond_to?(m)
@@ -115,6 +132,7 @@ module Paraspec
       #end
       #byebug
       #p args
+=end
       nil
     end
 
@@ -154,6 +172,8 @@ module Paraspec
     end
 
     def dump_summary
+      reporter.stop
+
       all_examples = RSpecFacade.all_examples
       notification = RSpec::Core::Notifications::SummaryNotification.new(
         @start_time ? Time.now-@start_time : 0,
@@ -168,7 +188,11 @@ module Paraspec
       RSpec.configuration.formatters.each do |f|
         if f.respond_to?(:dump_summary)
           f.dump_summary(notification)
+        end
+        if f.respond_to?(:dump_failures)
           f.dump_failures(examples_notification)
+        end
+        if f.respond_to?(:dump_pending)
           f.dump_pending(examples_notification)
         end
       end
