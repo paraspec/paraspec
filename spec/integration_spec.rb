@@ -194,35 +194,45 @@ describe 'Integration tests' do
   end
 
   context 'hooks' do
+    shared_examples_for 'works correctly' do
+      it 'succeeds' do
+        result.exit_code.should == 0
+        result.output.should include('1 example, 0 failures')
+      end
+
+      it 'runs each describe hooks' do
+        result.exit_code.should == 0
+        result.output.should include('before each describe')
+        result.output.should include('after each describe')
+      end
+
+      it 'runs all describe hooks' do
+        result.exit_code.should == 0
+        result.output.should include('before all describe')
+        result.output.should include('after all describe')
+      end
+
+      it 'runs each shared context hooks' do
+        result.exit_code.should == 0
+        result.output.should include('before each shared context')
+        result.output.should include('after each shared context')
+      end
+
+      it 'runs all shared context hooks' do
+        result.exit_code.should == 0
+        result.output.should include('before all shared context')
+        result.output.should include('after all shared context')
+      end
+    end
+
     let(:result) { run_paraspec_in_fixture('hooks', '-c', '1', '--', '-fd') }
 
-    it 'succeeds' do
-      result.exit_code.should == 0
-      result.output.should include('1 example, 0 failures')
-    end
+    it_behaves_like 'works correctly'
 
-    it 'runs each describe hooks' do
-      result.exit_code.should == 0
-      result.output.should include('before each describe')
-      result.output.should include('after each describe')
-    end
+    context 'invoking a single test' do
+      let(:result) { run_paraspec_in_fixture('hooks', '-c', '1', '--', '-fd', '-e', 'succeeds') }
 
-    it 'runs all describe hooks' do
-      result.exit_code.should == 0
-      result.output.should include('before all describe')
-      result.output.should include('after all describe')
-    end
-
-    it 'runs each shared context hooks' do
-      result.exit_code.should == 0
-      result.output.should include('before each shared context')
-      result.output.should include('after each shared context')
-    end
-
-    it 'runs all shared context hooks' do
-      result.exit_code.should == 0
-      result.output.should include('before all shared context')
-      result.output.should include('after all shared context')
+      it_behaves_like 'works correctly'
     end
   end
 end
