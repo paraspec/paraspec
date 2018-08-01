@@ -19,7 +19,18 @@ module Paraspec
       end
 
       rspec_options = RSpec::Core::ConfigurationOptions.new(ARGV)
-      rspec_options.configure(RSpec.configuration)
+      @non_example_exception_count = 0
+      begin
+        # This can fail if for example a nonexistent formatter is referenced
+        rspec_options.configure(RSpec.configuration)
+      rescue Exception => e
+        puts "#{e.class}: #{e}"
+        puts e.backtrace.join("\n")
+        # TODO and report this situation as a configuration problem
+        # and not a test suite problem
+        @non_example_exception_count = 1
+      end
+
 =begin
       if RSpec.configuration.files_to_run.empty?
         RSpec.configuration.send(:remove_instance_variable, '@files_to_run')
@@ -33,13 +44,14 @@ module Paraspec
 
       # It seems that load_spec_files sometimes rescues exceptions outside of
       # examples and sometimes does not, handle it both ways
-      @non_example_exception_count = 0
-      begin
-        RSpec.configuration.load_spec_files
-      rescue Exception => e
-        puts "#{e.class}: #{e}"
-        puts e.backtrace.join("\n")
-        @non_example_exception_count = 1
+      if @non_example_exception_count == 0
+        begin
+          RSpec.configuration.load_spec_files
+        rescue Exception => e
+          puts "#{e.class}: #{e}"
+          puts e.backtrace.join("\n")
+          @non_example_exception_count = 1
+        end
       end
       if @non_example_exception_count == 0
         @non_example_exception_count = RSpec.world.reporter.non_example_exception_count
