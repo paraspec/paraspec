@@ -129,9 +129,29 @@ describe 'Integration tests' do
     context 'failing test suite' do
       let(:result) { run_paraspec_in_fixture('junit-formatter', '-c', '1', '--', '-fd') }
 
-      it 'succeeds' do
+      it 'fails' do
         result.exit_code.should == 1
         result.output.should include('4 examples, 1 failure, 2 pending')
+      end
+    end
+  end
+
+  context 'conditionals on groups and examples' do
+    context 'evaluating to true' do
+      let(:result) { run_paraspec_in_fixture('conditional-met', '-c', '1', '--', '-fd') }
+
+      it 'reports same counts as rspec' do
+        result.exit_code.should == 0
+        result.output.should include('2 examples, 0 failures')
+      end
+    end
+
+    context 'evaluating to false' do
+      let(:result) { run_paraspec_in_fixture('conditional-unmet', '-c', '1', '--', '-fd') }
+
+      it 'reports same counts as rspec' do
+        result.exit_code.should == 0
+        result.output.should include('1 example, 0 failures')
       end
     end
   end

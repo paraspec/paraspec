@@ -28,7 +28,8 @@ module Paraspec
       byebug
         raise "No example group for #{spec.inspect}"
       end
-      examples = group.examples
+      examples = RSpec.configuration.filter_manager.prune(group.examples)
+      #Paraspec.logger.debug_state("Spec #{spec}: #{examples.length} examples")
       return if examples.empty?
       ids = examples.map { |e| e.metadata[:scoped_id] }
       #p [group.metadata,group.children,group.examples]

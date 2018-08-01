@@ -28,7 +28,12 @@ module Paraspec
     end
 
     def all_examples
-      @all_examples ||= all_example_groups.map { |g| g.examples }.flatten
+      @all_examples ||= begin
+        filter_manager = RSpec.configuration.filter_manager
+        all_example_groups.map do |group|
+          filter_manager.prune(group.examples)
+        end.flatten
+      end
     end
   end
 end
