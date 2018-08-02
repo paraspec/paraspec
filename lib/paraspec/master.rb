@@ -98,6 +98,10 @@ module Paraspec
       RSpec.configuration.reporter.send(:instance_variable_get,'@non_example_exception_count') == 0
     end
 
+    def example_count
+      RSpecFacade.all_examples.count
+    end
+
     def get_spec
       while true
         example_group = @queue.shift

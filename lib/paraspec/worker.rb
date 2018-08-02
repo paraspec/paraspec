@@ -32,6 +32,11 @@ module Paraspec
       RSpecFacade.all_example_groups
       RSpecFacade.all_examples
 
+      master_example_count = master_client.request('example-count')
+      if master_example_count != RSpecFacade.all_examples.count
+        raise "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
+      end
+
       while true
         Paraspec.logger.debug_state("Requesting a spec")
         spec = master_client.request('get-spec')
