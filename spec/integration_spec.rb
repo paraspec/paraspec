@@ -247,4 +247,20 @@ describe 'Integration tests' do
       it_behaves_like 'works correctly'
     end
   end
+
+  context 'multiple files' do
+    let(:result) { run_paraspec_in_fixture('multi-file-suite', '-c', '1', '--', '-fd') }
+
+    it 'succeeds' do
+      result.exit_code.should == 0
+      result.output.should include('3 examples, 0 failures')
+    end
+
+    it 'executes each example once' do
+      result.exit_code.should == 0
+      result.output.scan('one succeeds').count.should == 1
+      result.output.scan('two succeeds').count.should == 1
+      result.output.scan('three succeeds').count.should == 1
+    end
+  end
 end
