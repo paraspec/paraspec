@@ -11,7 +11,6 @@ module Paraspec
     end
 
     def all_example_groups
-    #byebug
       @all_example_groups ||= begin
         groups = [] + RSpec.world.example_groups
         all_groups = []

@@ -44,9 +44,7 @@ module Paraspec
     end
 
     def run_supervisor
-    #p :run_supe
       start_time = Time.now
-      #@master = drb_connect(MASTER_DRB_URI, timeout: !@terminal)
 
       if master_client.request('non-example-exception-count').to_i == 0
         master_client.request('suite-started')
@@ -90,7 +88,6 @@ module Paraspec
       if status == 0
         status = master_client.request('status')
       end
-      #byebug
       Paraspec.logger.debug_state("Asking master to stop")
       master_client.request('stop')
       wait_for_process(@master_pid)

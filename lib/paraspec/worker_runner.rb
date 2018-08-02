@@ -33,22 +33,17 @@ module Paraspec
       #Paraspec.logger.debug_state("Spec #{spec}: #{examples.length} examples")
       return if examples.empty?
       ids = examples.map { |e| e.metadata[:scoped_id] }
-      #p [group.metadata,group.children,group.examples]
-      #p group.examples
       RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
       RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
       RSpec.world.filter_examples
       examples = RSpec.configuration.filter_manager.prune(examples)
       return if examples.empty?
-      #p RSpec.world.filtered_examples.values.map(&:count)
-      #RSpec.configuration.with_suite_hooks do
       # It is important to run the entire world here because if
       # a particular example group is run, before/after :all hooks
       # aren't always run
       RSpec.world.ordered_example_groups.each do |group|
         group.reset_memoized
       end
-      #byebug
       # Hack to not run examples from each group each time I want to run
       # a single example. It seems that rspec performs filtering by file
       # at one time and by expressions/scoped id at a different time,
@@ -58,10 +53,7 @@ module Paraspec
       run_example_groups = RSpec.world.ordered_example_groups.select do |c_group|
         c_group.metadata[:file_path] == spec[:file_path]
       end
-        runner.run_specs(run_example_groups).tap do
-          #persist_example_statuses
-        end
-      #end
+      runner.run_specs(run_example_groups)
     end
 
     private def runner

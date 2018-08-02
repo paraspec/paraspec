@@ -68,8 +68,6 @@ module Paraspec
     attr :non_example_exception_count
 
     def run
-#    puts "master: #{Process.pid} #{Process.getpgrp}"
-      #p :start
       Thread.new do
         #HttpServer.set(:master, self).run!(port: 6031)
         MsgpackServer.new(self).run
@@ -85,7 +83,6 @@ module Paraspec
     end
 
     def stop
-    #byebug
       Paraspec.logger.debug_state("Stopping")
       @stop = true
     end
@@ -140,22 +137,7 @@ module Paraspec
       example.metadata[:execution_result] = execution_result
       status = execution_result.status
       m = "example_#{status}"
-      #RSpec.configuration.reporter.report(1) do |reporter|
-      #p RSpec.configuration.formatters
-      #ii
-      #p ['send', example.metadata[:scoped_id]]
-        reporter.send(m, example)
-=begin
-      notification = RSpec::Core::Notifications::ExampleNotification.for(example)
-      RSpec.configuration.formatters.each do |f|
-        if f.respond_to?(m)
-          #f.send(m, notification)
-        end
-      end
-      #end
-      #byebug
-      #p args
-=end
+      reporter.send(m, example)
       nil
     end
 
@@ -206,7 +188,6 @@ module Paraspec
         0,
         non_example_exception_count,
       )
-      #p notification
       examples_notification = RSpec::Core::Notifications::ExamplesNotification.new(reporter)
       RSpec.configuration.formatters.each do |f|
         if f.respond_to?(:dump_summary)
@@ -219,8 +200,6 @@ module Paraspec
           f.dump_pending(examples_notification)
         end
       end
-      #p :fini, $$
-      #byebug
       nil
     end
 

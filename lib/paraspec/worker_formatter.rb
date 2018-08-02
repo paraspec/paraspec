@@ -44,11 +44,9 @@ module Paraspec
     end
 
     def dump_summary(notification)
-      #byebug
     end
 
     def method_missing(m, args)
-      #p m
     end
 
     def example_started(notification)
@@ -60,7 +58,6 @@ module Paraspec
     end
 
     def example_passed(notification)
-    #byebug
       example_notification(notification)
     end
 
@@ -69,13 +66,9 @@ module Paraspec
         file_path: notification.example.metadata[:file_path],
         scoped_id: notification.example.metadata[:scoped_id],
       }
-      #byebug
-      #p :a
       execution_result = notification.example.execution_result
       @master_client.request('example-passed',
         spec: spec, result: execution_result)
-      #b :b
-      #1
     end
 
     def example_failed(notification)

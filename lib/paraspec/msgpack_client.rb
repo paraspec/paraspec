@@ -14,14 +14,12 @@ module Paraspec
     def request(action, payload=nil)
       req = {action: action, payload: payload, id: request_id}
       Paraspec.logger.debug_ipc("CliReq:#{req[:id]} #{req}")
-      #p req
       pk = packer(@socket)
       pk.write(req)
       pk.flush
       response = unpacker(@socket).unpack
       Paraspec.logger.debug_ipc("CliRes:#{req[:id]} #{response}")
       response = IpcHash.new.merge(response)
-    #p [:rrr,response]
       response[:result]
     end
 
