@@ -34,6 +34,14 @@ module Paraspec
 
       master_example_count = master_client.request('example-count')
       if master_example_count != RSpecFacade.all_examples.count
+        # Workers and master should have the same examples defined.
+        # If a test suite conditionally defines examples, it needs to
+        # ensure that master and worker use the same settings.
+        # If worker and master sets of examples differ, when the worker
+        # requests an example from master it may receive an example
+        # that it can't run.
+        # We just check the count for now but may take a digest of
+        # defined examples in the future.
         raise "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
       end
 
