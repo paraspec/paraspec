@@ -21,7 +21,25 @@ module Paraspec
         Process.setpgrp
       end
 
-      at_exit { kill_child_processes }
+      supervisor_pid = $$
+      at_exit do
+        # We fork, therefore this handler will be run in master and
+        # workers as well but it should only run in supervisor.
+        # Guard accordingly
+        if $$ == supervisor_pid
+          # first kill workers, then master
+          ((@worker_pids || []) + [@master_pid]).compact.each do |pid|
+            begin
+              Process.kill('TERM', pid)
+            rescue SystemCallError
+            end
+          end
+          # then kill our process group
+          unless @terminal
+            kill_child_processes
+          end
+        end
+      end
 
       rd, wr = IO.pipe
       if @master_pid = fork
