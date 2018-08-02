@@ -151,6 +151,7 @@ module Paraspec
         example.metadata[:scoped_id] == spec[:scoped_id]
       end
       unless example
+        puts "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
       byebug
         raise "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
       end
