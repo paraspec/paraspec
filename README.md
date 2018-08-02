@@ -72,10 +72,14 @@ Paraspec offers several debugging aids. The first one is the terminal option:
 
     paraspec -T
 
-This option makes paraspec stay attached to the same terminal it was
+This option makes paraspec stay attached to the terminal it was
 launched in, making it possible to insert e.g. `byebug` calls in supervisor,
 master or worker code as well as anywhere in the test suite being executed
-and have byebug work. Setting this option also sets concurrency to 1.
+and have byebug work. Setting this option also removes internal timeouts
+on interprocess waits and sets concurrency to 1, however concurrency
+can be reset with a subsequent `-c` option:
+
+    paraspec -T -c 2
 
 Paraspec can produce copious debugging output in several facilities.
 The debugging output is turned on with `-d`/`--debug` option:
