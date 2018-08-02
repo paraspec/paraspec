@@ -45,7 +45,20 @@ module Paraspec
       # It is important to run the entire world here because if
       # a particular example group is run, before/after :all hooks
       # aren't always run
-        runner.run_specs(RSpec.world.ordered_example_groups).tap do
+      RSpec.world.ordered_example_groups.each do |group|
+        group.reset_memoized
+      end
+      #byebug
+      # Hack to not run examples from each group each time I want to run
+      # a single example. It seems that rspec performs filtering by file
+      # at one time and by expressions/scoped id at a different time,
+      # because simply requesting filtering by scoped id makes rspec
+      # include examples from all other files (it also mutates the filters
+      # when querying them for example groups... ugh)
+      run_example_groups = RSpec.world.ordered_example_groups.select do |c_group|
+        c_group.metadata[:file_path] == spec[:file_path]
+      end
+        runner.run_specs(run_example_groups).tap do
           #persist_example_statuses
         end
       #end
