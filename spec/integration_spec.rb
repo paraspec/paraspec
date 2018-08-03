@@ -248,11 +248,11 @@ describe 'Integration tests' do
     end
 
     context 'instance variables set in before hooks' do
-      let(:result) { run_paraspec_in_fixture('hooks-all-ivar', '-c', '1', '--', '-fd') }
+      let(:result) { run_paraspec_in_fixture('hooks-all-ivar', '-c', '4', '--', '-fd') }
 
       it 'are accessible' do
         result.exit_code.should == 0
-        result.output.should include('1 example, 0 failures')
+        result.output.should include('40 examples, 0 failures')
       end
     end
   end
