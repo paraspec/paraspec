@@ -29,12 +29,22 @@ describe 'Sample' do
   end
 
   context 'subcontext' do
-    it 'succeeds' do
-      expect(@each).to eq('each')
-      expect(@all).to eq('all')
+    10.times do |i|
+      it "succeeds #{i} time" do
+        expect(@each).to eq('each')
+        expect(@all).to eq('all')
 
-      expect(@shared_each).to eq('shared_each')
-      expect(@shared_all).to eq('shared_all')
+        expect(@shared_each).to eq('shared_each')
+        expect(@shared_all).to eq('shared_all')
+      end
+
+      it "succeeds #{i} again" do
+        expect(@each).to eq('each')
+        expect(@all).to eq('all')
+
+        expect(@shared_each).to eq('shared_each')
+        expect(@shared_all).to eq('shared_all')
+      end
     end
   end
 
