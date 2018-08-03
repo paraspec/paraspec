@@ -35,7 +35,15 @@ is not currently on the roadmap.
 
 ## Usage
 
-For a test suite with no external dependencies, using paraspec is
+Add paraspec to your Gemfile:
+
+    gem 'paraspec'
+
+This is necessary because paraspec has its own dependencies and loads
+the application being tested into its environment, hence both paraspec's
+and application's dependencies need to exist in the same Bundler environment.
+
+Then, for a test suite with no external dependencies, using paraspec is
 trivially easy. Just run:
 
     paraspec
