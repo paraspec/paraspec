@@ -45,7 +45,7 @@ module Paraspec
         # A mismatch here usually indicates an issue with the test suite
         # being run.
         puts "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
-        byebug
+        #byebug
         raise "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
       end
 

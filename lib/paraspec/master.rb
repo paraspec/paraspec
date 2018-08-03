@@ -143,16 +143,16 @@ module Paraspec
 
     def find_example(spec)
       if spec.nil?
-        byebug
+        #byebug
         raise ArgumentError, 'Nil spec'
       end
-      example = RSpecFacade.all_examples.detect do |example|
+      example = (RSpecFacade.all_example_groups + RSpecFacade.all_examples).detect do |example|
         example.metadata[:file_path] == spec[:file_path] &&
         example.metadata[:scoped_id] == spec[:scoped_id]
       end
       unless example
         puts "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
-      byebug
+      #byebug
         raise "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
       end
       example

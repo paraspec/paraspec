@@ -2,7 +2,6 @@
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'byebug' rescue nil
 require 'paraspec'
 require 'optparse'
 

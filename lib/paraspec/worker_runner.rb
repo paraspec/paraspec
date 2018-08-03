@@ -26,7 +26,7 @@ module Paraspec
       end
       unless group
         puts "No example group for #{spec.inspect}, #{RSpecFacade.all_example_groups.count} total groups"
-      byebug
+      #byebug
         raise "No example group for #{spec.inspect}"
       end
       examples = group.examples
