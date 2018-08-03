@@ -263,4 +263,31 @@ describe 'Integration tests' do
       result.output.scan('three succeeds').count.should == 1
     end
   end
+
+  context 'interrupting' do
+    shared_examples_for 'interrupts' do
+      it 'interrupts' do
+        process = start_paraspec_in_fixture('slow-suite', '-c', '3', '--', '-fd')
+        sleep 1.5
+        Process.kill(signal, process.pid)
+        result = process.wait
+        result.output.should include('succeeds 1 time')
+        result.output.should include('succeeds 2 time')
+        result.output.should_not include('succeeds 11 time')
+        result.output.should_not include('succeeds 12 time')
+      end
+    end
+
+    context 'with sigterm' do
+      let(:signal) { 'TERM' }
+
+      it_behaves_like 'interrupts'
+    end
+
+    context 'with sigint' do
+      let(:signal) { 'INT' }
+
+      it_behaves_like 'interrupts'
+    end
+  end
 end

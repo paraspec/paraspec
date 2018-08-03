@@ -9,16 +9,18 @@ module Macros
 end
 
 module Helpers
-  def run_paraspec_in_fixture(fixture, *cmd)
-    bin_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'paraspec'))
-    cmd = [bin_path] + cmd
+  class ProcessWrapper
+    def initialize(process)
+      @process = process
+    end
 
-    Dir.chdir(File.join('fixtures', fixture)) do
-      process = ChildProcess.new(*cmd)
-      process.io.stdout = Tempfile.new('pss')
-      process.io.stderr = Tempfile.new('pss')
-      #process.io.inherit!
-      process.start
+    attr_reader :process
+
+    def pid
+      process.pid
+    end
+
+    def wait
       process.wait
       process.io.stdout.rewind
       process.io.stderr.rewind
@@ -31,6 +33,26 @@ module Helpers
       process.io.stderr.close
       rv
     end
+  end
+
+  def start_paraspec_in_fixture(fixture, *cmd)
+    bin_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'bin', 'paraspec'))
+    cmd = [bin_path] + cmd
+
+    process = nil
+    Dir.chdir(File.join('fixtures', fixture)) do
+      process = ChildProcess.new(*cmd)
+      process.io.stdout = Tempfile.new('pss')
+      process.io.stderr = Tempfile.new('pss')
+      #process.io.inherit!
+      process.start
+    end
+
+    ProcessWrapper.new(process)
+  end
+
+  def run_paraspec_in_fixture(fixture, *cmd)
+    start_paraspec_in_fixture(fixture, *cmd).wait
   end
 end
 
