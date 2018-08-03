@@ -246,6 +246,15 @@ describe 'Integration tests' do
 
       it_behaves_like 'works correctly'
     end
+
+    context 'instance variables set in before hooks' do
+      let(:result) { run_paraspec_in_fixture('hooks-all-ivar', '-c', '1', '--', '-fd') }
+
+      it 'are accessible' do
+        result.exit_code.should == 0
+        result.output.should include('1 example, 0 failures')
+      end
+    end
   end
 
   context 'multiple files' do
