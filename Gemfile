@@ -1,14 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'rspec'
-gem 'childprocess'
-#gem 'sinatra'
-#gem 'faraday'
-gem 'hashie'
-gem 'msgpack'
+gemspec
 
 group :development, :test do
   gem 'byebug'
+  gem 'rspec'
 end
 
 group :test do
