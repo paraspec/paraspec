@@ -29,44 +29,40 @@ describe 'Sample' do
   end
 
   context 'one context' do
-    10.times do |i|
-      it "succeeds #{i} time" do
+    it "succeeds one time" do
+      expect(@each).to eq('each')
+      expect(@all).to eq('all')
+
+      expect(@shared_each).to eq('shared_each')
+      expect(@shared_all).to eq('shared_all')
+    end
+
+    context 'subcontext' do
+      it "succeeds one again" do
         expect(@each).to eq('each')
         expect(@all).to eq('all')
 
         expect(@shared_each).to eq('shared_each')
         expect(@shared_all).to eq('shared_all')
-      end
-
-      context 'subcontext' do
-        it "succeeds #{i} again" do
-          expect(@each).to eq('each')
-          expect(@all).to eq('all')
-
-          expect(@shared_each).to eq('shared_each')
-          expect(@shared_all).to eq('shared_all')
-        end
       end
     end
   end
 
   context 'two context' do
-    10.times do |i|
-      it "succeeds #{i} time" do
-        expect(@each).to eq('each')
-        expect(@all).to eq('all')
+    it "succeeds one time" do
+      expect(@each).to eq('each')
+      expect(@all).to eq('all')
 
-        expect(@shared_each).to eq('shared_each')
-        expect(@shared_all).to eq('shared_all')
-      end
+      expect(@shared_each).to eq('shared_each')
+      expect(@shared_all).to eq('shared_all')
+    end
 
-      it "succeeds #{i} again" do
-        expect(@each).to eq('each')
-        expect(@all).to eq('all')
+    it "succeeds again" do
+      expect(@each).to eq('each')
+      expect(@all).to eq('all')
 
-        expect(@shared_each).to eq('shared_each')
-        expect(@shared_all).to eq('shared_all')
-      end
+      expect(@shared_each).to eq('shared_each')
+      expect(@shared_all).to eq('shared_all')
     end
   end
 

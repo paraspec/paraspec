@@ -40,8 +40,10 @@ module Paraspec
       return if examples.empty?
       # It is important to run the entire world here because if
       # a particular example group is run, before/after :all hooks
-      # aren't always run
-      RSpec.world.ordered_example_groups.each do |group|
+      # aren't always run.
+      # And "the entire world" means our complete list of example groups,
+      # not RSpec.world.ordered_example_groups which are top level only!
+      RSpecFacade.all_example_groups.each do |group|
         group.reset_memoized
       end
       # Hack to not run examples from each group each time I want to run

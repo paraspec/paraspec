@@ -252,7 +252,7 @@ describe 'Integration tests' do
 
       it 'are accessible' do
         result.exit_code.should == 0
-        result.output.should include('40 examples, 0 failures')
+        result.output.should include('4 examples, 0 failures')
       end
     end
   end
