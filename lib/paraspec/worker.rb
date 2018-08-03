@@ -42,6 +42,10 @@ module Paraspec
         # that it can't run.
         # We just check the count for now but may take a digest of
         # defined examples in the future.
+        # A mismatch here usually indicates an issue with the test suite
+        # being run.
+        puts "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
+        byebug
         raise "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
       end
 
