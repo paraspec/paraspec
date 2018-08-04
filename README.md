@@ -39,7 +39,7 @@ How much of a difference does paraspec make? The answer, as one might
 expect, varies greatly with the test suite being run as well as available
 hardware. Here are some examples:
 
-| Example | Sequential | Paraspec (c=2) | Paraspec (c=4) |
+| Example | Hardware | Sequential | Paraspec (c=2) | Paraspec (c=4) |
 |---------|------------|----------------|----------------|
 | [MongoDB Ruby Driver](https://docs.mongodb.com/ruby-driver/current/) test suite | Travis CI | 16 minutes | 13 minutes | 10-11 minutes |
 | [MongoDB Ruby Driver](https://docs.mongodb.com/ruby-driver/current/) test suite | 14-core workstation | 15 minutes | | 4 minutes |
