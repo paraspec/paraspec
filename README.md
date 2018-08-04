@@ -33,6 +33,27 @@ is not currently on the roadmap.
 
 [**] Currently only grouping by bottom level example group is implemented.
 
+## Performance
+
+How much of a difference does paraspec make? The answer, as one might
+expect, varies greatly with the test suite being run as well as available
+hardware. Here are some examples:
+
+| Example | Sequential | Paraspec (c=2) | Paraspec (c=4) |
+|---------|------------|----------------|----------------|
+| [MongoDB Ruby Driver](https://docs.mongodb.com/ruby-driver/current/) test suite | Travis CI | 16 minutes | 13 minutes | 10-11 minutes |
+| [MongoDB Ruby Driver](https://docs.mongodb.com/ruby-driver/current/) test suite | 14-core workstation | 15 minutes | | 4 minutes |
+
+[Exampe Travis build](https://travis-ci.org/p-mongo/mongo-ruby-driver-paraspec/builds/411986888)
+
+Even on Travis, which is likely limited to a single core, using 4x concurrency
+reduces the runtime by 5 minutes. On a developer workstation which doesn't
+download binaries on every test run the speedup is closer to linear.
+Waiting 4 minutes instead of 15 for a complete test suite means the engineers
+can actually run the complete test suite as part of their normal workflow,
+instead of sending the code to a CI platform and context switching to
+a different project.
+
 ## Usage
 
 Add paraspec to your Gemfile:
