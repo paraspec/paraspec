@@ -1,5 +1,6 @@
 require 'paraspec/rspec_patches'
 require 'paraspec/version'
+require 'paraspec/errors'
 require 'paraspec/logger'
 require 'paraspec/ipc'
 require 'paraspec/drb_helpers'

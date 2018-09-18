@@ -46,7 +46,7 @@ module Paraspec
         # being run.
         puts "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
         #byebug
-        raise "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
+        raise InconsistentTestSuite, "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
       end
 
       while true
