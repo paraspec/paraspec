@@ -6,7 +6,7 @@ module Paraspec
     def initialize(options={})
       @terminal = options[:terminal]
 
-      @client = Faraday.new(url: "http://localhost:#{Paraspec::MASTER_APP_PORT}") do |client|
+      @client = Faraday.new(url: "http://localhost:#{Paraspec::Ipc.master_app_port}") do |client|
         client.adapter :net_http
         if @terminal
           client.options.timeout = 100000

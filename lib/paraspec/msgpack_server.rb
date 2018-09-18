@@ -11,7 +11,7 @@ module Paraspec
     end
 
     def run
-      @socket = ::TCPServer.new('127.0.0.1', MASTER_APP_PORT)
+      @socket = ::TCPServer.new('127.0.0.1', Paraspec::Ipc.master_app_port)
       begin
         while true
           s = @socket.accept_nonblock

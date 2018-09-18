@@ -41,6 +41,8 @@ module Paraspec
         end
       end
 
+      Paraspec::Ipc.pick_master_app_port
+
       rd, wr = IO.pipe
       if @master_pid = fork
         # parent

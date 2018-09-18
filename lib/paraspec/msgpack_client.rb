@@ -39,7 +39,7 @@ module Paraspec
     private def connect
       start_time = Time.now
       begin
-        @socket = TCPSocket.new('127.0.0.1', MASTER_APP_PORT)
+        @socket = TCPSocket.new('127.0.0.1', Paraspec::Ipc.master_app_port)
       rescue Errno::ECONNREFUSED
         if !@terminal && Time.now - start_time > DrbHelpers::WAIT_TIME
           raise
