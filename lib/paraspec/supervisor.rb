@@ -93,7 +93,7 @@ module Paraspec
         Paraspec.logger.debug_state("Waiting for workers")
         @worker_pids.each_with_index do |pid, i|
           Paraspec.logger.debug_state("Waiting for worker #{i+1} at #{pid}")
-          wait_for_process(pid)
+          wait_for_process(pid, "Worker #{i+1}", WorkerFailed)
         end
         status = 0
       else
@@ -108,15 +108,14 @@ module Paraspec
       end
       Paraspec.logger.debug_state("Asking master to stop")
       master_client.request('stop')
-      wait_for_process(@master_pid)
+      wait_for_process(@master_pid, 'Master', MasterFailed)
       exit status
     end
 
-    def wait_for_process(pid)
-      begin
-        Process.wait(pid)
-      rescue Errno::ECHILD
-        # already dead
+    def wait_for_process(pid, process_name, exception_class)
+      pid, status = Process.wait2(pid)
+      if status.exitstatus != 0
+        raise exception_class, "#{process_name} exited with status #{status.exitstatus}"
       end
     end
 
