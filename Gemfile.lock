@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paraspec (0.0.1)
+    paraspec (0.0.2)
       childprocess (~> 0.9.0)
       hashie (~> 3.5.7)
       msgpack (~> 1.2.4)
