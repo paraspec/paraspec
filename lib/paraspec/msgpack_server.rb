@@ -46,7 +46,15 @@ module Paraspec
             pk = packer(s)
             resp = {result: result}
             Paraspec.logger.debug_ipc("SrvRes:#{obj['id']} #{resp}")
-            pk.write(resp)
+            if payload && payload['_noret']
+              # Requester does not want a response.
+              # We return a hash here because deserializer expects a hash.
+              # Always returning `resp` is problematic because it can
+              # be non-serializable.
+              pk.write({})
+            else
+              pk.write(resp)
+            end
             pk.flush
             s.flush
           end
