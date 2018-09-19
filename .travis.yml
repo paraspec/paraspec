@@ -1,0 +1,17 @@
+language: ruby
+
+sudo: false
+
+install: ruby -S bundle install --without release development
+
+rvm:
+  - 2.5
+
+branches:
+  only:
+    - master
+
+script: bundle exec rspec
+
+notifications:
+  email: false
