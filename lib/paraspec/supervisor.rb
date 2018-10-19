@@ -21,6 +21,11 @@ module Paraspec
         Process.setpgrp
       end
 
+      at_exit do
+        STDERR.flush
+        STDOUT.flush
+      end
+
       supervisor_pid = $$
       at_exit do
         # We fork, therefore this handler will be run in master and
