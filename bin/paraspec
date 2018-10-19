@@ -16,7 +16,7 @@ OptionParser.new do |opts|
     options[:concurrency] = v.to_i
   end
 
-  opts.on('-d', '--debug=SUBSYSTEM', 'Output debugging information for SUBSYSTEM') do |v|
+  opts.on('-d', '--debug=SUBSYSTEM', 'Output debugging information for SUBSYSTEM (state/ipc/perf)') do |v|
     options[:"debug_#{v}"] = true
     options[:debug] = true
   end
@@ -44,7 +44,7 @@ end
 RSpec.configuration.files_or_directories_to_run = files
 =end
 
-%w(ipc state perf).each do |subsystem|
+%w(state ipc perf).each do |subsystem|
   if options.delete(:"debug_#{subsystem}")
     Paraspec.logger.send("log_#{subsystem}=", true)
   end
