@@ -325,5 +325,20 @@ describe 'Integration tests' do
         result.errput.should_not include('[w1] [state] Finished running spec')
       end
     end
+
+    context 'with example filter' do
+      let(:result) { run_paraspec_in_fixture('unsplittable-one-file-suite',
+        '-c', '2', '-d', 'state', '--', '-fd', '-e', 'two') }
+
+      it 'succeeds' do
+        result.exit_code.should == 0
+        result.output.should include('2 examples, 0 failures')
+      end
+
+      it 'filters' do
+        result.output.should include('beautiful two')
+        result.output.should_not include('beautiful one')
+      end
+    end
   end
 end
