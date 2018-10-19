@@ -1,4 +1,4 @@
-20.times do |i|
+30.times do |i|
   describe 'Group #{i}' do
     it "succeeds #{i} time" do
       sleep 0.5
