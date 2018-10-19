@@ -29,14 +29,30 @@ module Paraspec
       #byebug
         raise "No example group for #{spec.inspect}"
       end
-      examples = group.examples
-      #Paraspec.logger.debug_state("Spec #{spec}: #{examples.length} examples")
-      return if examples.empty?
-      ids = examples.map { |e| e.metadata[:scoped_id] }
-      RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
-      RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
-      RSpec.world.filter_examples
-      examples = RSpec.configuration.filter_manager.prune(examples)
+      if group.metadata[:paraspec] && group.metadata[:paraspec][:split] == false
+        # unsplittable group
+        # get all examples in child groups
+        examples = []
+        group_queue = [group]
+        until group_queue.empty?
+          next_group_queue = []
+          group_queue.each do |group|
+            next_group_queue += group.children
+            examples += group.examples
+          end
+          group_queue = next_group_queue
+        end
+      else
+        # leaf group
+        examples = group.examples
+        #Paraspec.logger.debug_state("Spec #{spec}: #{examples.length} examples")
+        return if examples.empty?
+        ids = examples.map { |e| e.metadata[:scoped_id] }
+        RSpec.configuration.send(:instance_variable_set, '@filter_manager', RSpec::Core::FilterManager.new)
+        RSpec.configuration.filter_manager.add_ids(spec[:file_path], ids)
+        RSpec.world.filter_examples
+        examples = RSpec.configuration.filter_manager.prune(examples)
+      end
       return if examples.empty?
       # It is important to run the entire world here because if
       # a particular example group is run, before/after :all hooks
