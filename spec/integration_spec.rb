@@ -277,9 +277,13 @@ describe 'Integration tests' do
     shared_examples_for 'interrupts' do
       it 'interrupts' do
         process = start_paraspec_in_fixture('slow-suite', '-c', '3', '--', '-fd')
-        sleep 1.5
+        sleep 2
         Process.kill(signal, process.pid)
         result = process.wait
+        result.exit_code.should_not == 0
+        if result.output.empty?
+          fail "Empty output; error stream: #{result.errput}; exit code: #{result.exit_code}"
+        end
         result.output.should include('succeeds 1 time')
         result.output.should include('succeeds 2 time')
         result.output.should_not include('succeeds 11 time')
