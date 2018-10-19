@@ -22,6 +22,9 @@ module Paraspec
       end
 
       at_exit do
+        # It seems that when the tests are run in Travis, killing
+        # paraspec vaporizes the standard output... flush the
+        # standard output streams here to work around.
         STDERR.flush
         STDOUT.flush
       end
