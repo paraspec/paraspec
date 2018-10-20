@@ -58,7 +58,7 @@ module Paraspec
       end
       @queue = []
       if @non_example_exception_count == 0
-        @queue += RSpecFacade.all_example_groups
+        @queue += RSpecFacade.queueable_example_groups
         puts "#{@queue.length} example groups queued"
       else
         puts "#{@non_example_exception_count} errors outside of examples, aborting"
@@ -104,13 +104,20 @@ module Paraspec
         example_group = @queue.shift
         return nil if example_group.nil?
 
-        # TODO I am still not 100% on what should be filtered and pruned where,
-        # but we shouldn't be returning a specification here unless
-        # there are tests in it that a worker will run
-        pruned_examples = RSpec.configuration.filter_manager.prune(example_group.examples)
-        next if pruned_examples.empty?
+        if example_group.metadata[:paraspec] && example_group.metadata[:paraspec][:split] == false
+          # unsplittable example group
+          # pass to worker as is and have the worker prune examples
+          m = example_group.metadata
+        else
+          # TODO I am still not 100% on what should be filtered and pruned where,
+          # but we shouldn't be returning a specification here unless
+          # there are tests in it that a worker will run
+          pruned_examples = RSpec.configuration.filter_manager.prune(example_group.examples)
+          next if pruned_examples.empty?
 
-        m = example_group.metadata
+          m = example_group.metadata
+        end
+
         return {
           file_path: m[:file_path],
           scoped_id: m[:scoped_id],

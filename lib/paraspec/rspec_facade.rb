@@ -7,7 +7,27 @@ module Paraspec
 
     class << self
       extend Forwardable
-      def_delegators :instance, :all_example_groups, :all_examples
+      def_delegators :instance, :queueable_example_groups, :all_example_groups, :all_examples
+    end
+
+    def queueable_example_groups
+      @queueable_example_groups ||= begin
+        groups = [] + RSpec.world.example_groups
+        all_groups = []
+        until groups.empty?
+          new_groups = []
+          groups.each do |group|
+            all_groups << group
+            if group.metadata[:paraspec] && group.metadata[:paraspec][:split] == false
+              # unsplittable group
+            else
+              new_groups += group.children
+            end
+          end
+          groups = new_groups
+        end
+        all_groups
+      end
     end
 
     def all_example_groups

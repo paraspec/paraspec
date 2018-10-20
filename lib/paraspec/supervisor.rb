@@ -53,7 +53,7 @@ module Paraspec
 
       rd, wr = IO.pipe
       if @master_pid = fork
-        # parent
+        # parent - supervisor
         wr.close
         @master_pipe = rd
         run_supervisor
