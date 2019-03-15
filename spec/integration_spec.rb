@@ -305,7 +305,7 @@ describe 'Integration tests' do
   end
 
   context 'unsplittable example group' do
-    let(:result) { run_paraspec_in_fixture('unsplittable-one-file-suite', '-c', '2', '-d', 'state', '--', '-fd') }
+    let(:result) { run_paraspec_in_fixture('unsplittable-describe', '-c', '2', '-d', 'state', '--', '-fd') }
 
     it 'succeeds' do
       result.exit_code.should == 0
@@ -327,7 +327,7 @@ describe 'Integration tests' do
     end
 
     context 'with example filter' do
-      let(:result) { run_paraspec_in_fixture('unsplittable-one-file-suite',
+      let(:result) { run_paraspec_in_fixture('unsplittable-describe',
         '-c', '2', '-d', 'state', '--', '-fd', '-e', 'two') }
 
       it 'succeeds' do
@@ -337,7 +337,45 @@ describe 'Integration tests' do
 
       it 'filters' do
         result.output.should include('beautiful two')
-        result.output.should_not include('beautiful one')
+        result.output.should_not include('beautiful three')
+      end
+    end
+  end
+
+  context 'unsplittable context' do
+    let(:result) { run_paraspec_in_fixture('unsplittable-context', '-c', '2', '-d', 'state', '--', '-fd') }
+
+    it 'succeeds' do
+      result.exit_code.should == 0
+      result.output.should include('3 examples, 0 failures')
+    end
+
+    it 'executes all examples in the same worker' do
+      if result.errput.include?('[w1] [state] Finished running spec')
+        result.errput.should include('[w1] [state] Got spec')
+        result.errput.should include('[w1] [state] Finished running spec')
+        result.errput.should include('[w2] [state] Got spec nil')
+        result.errput.should_not include('[w2] [state] Finished running spec')
+      else
+        result.errput.should include('[w2] [state] Got spec')
+        result.errput.should include('[w2] [state] Finished running spec')
+        result.errput.should include('[w1] [state] Got spec nil')
+        result.errput.should_not include('[w1] [state] Finished running spec')
+      end
+    end
+
+    context 'with example filter' do
+      let(:result) { run_paraspec_in_fixture('unsplittable-context',
+        '-c', '2', '-d', 'state', '--', '-fd', '-e', 'two') }
+
+      it 'succeeds' do
+        result.exit_code.should == 0
+        result.output.should include('1 example, 0 failures')
+      end
+
+      it 'filters' do
+        result.output.should include('beautiful two')
+        result.output.should_not include('beautiful three')
       end
     end
   end
