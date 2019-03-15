@@ -29,7 +29,7 @@ module Paraspec
       #byebug
         raise "No example group for #{spec.inspect}"
       end
-      if group.metadata[:paraspec] && group.metadata[:paraspec][:split] == false
+      if group.metadata[:paraspec] && group.metadata[:paraspec][:group]
         # unsplittable group
         # get all examples in child groups
         examples = []

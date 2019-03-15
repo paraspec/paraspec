@@ -104,7 +104,7 @@ module Paraspec
         example_group = @queue.shift
         return nil if example_group.nil?
 
-        if example_group.metadata[:paraspec] && example_group.metadata[:paraspec][:split] == false
+        if example_group.metadata[:paraspec] && example_group.metadata[:paraspec][:group]
           # unsplittable example group
           # pass to worker as is and have the worker prune examples
           m = example_group.metadata

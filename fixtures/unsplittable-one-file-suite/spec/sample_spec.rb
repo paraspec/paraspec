@@ -1,4 +1,4 @@
-describe 'A grouping', paraspec: {split: false} do
+describe 'A grouping', paraspec: {group: true} do
   describe 'Sample' do
     it 'is beautiful' do
       sleep 0.2

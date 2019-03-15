@@ -130,6 +130,34 @@ The debugging output is turned on with `-d`/`--debug` option:
     paraspec -d ipc     # IPC requests and responses
     paraspec -d perf    # timing & performance information
 
+### Executing Tests Together
+
+It is possible to specify that a group of tests should be executed in the
+same worker rather than distributed. This is useful when the setup for
+the tests is expensive and therefore is done once with multiple tests
+defined on the result.
+
+The grouping is defined by specifying `{group: true}` paraspec option on
+a `describe` or a `context` block as follows:
+
+    describe 'Run these together', paraspec: {group: true} do
+      before(:all) do
+        # expensive setup
+      end
+      
+      it 'does something' do
+        # ...
+      end
+      
+      it 'does something else' do
+        # ...
+      end
+      
+      after(:all) do
+        # teardown
+      end
+    end
+
 ## Caveats
 
 The master and workers need to all define the same example groups and

@@ -18,7 +18,7 @@ module Paraspec
           new_groups = []
           groups.each do |group|
             all_groups << group
-            if group.metadata[:paraspec] && group.metadata[:paraspec][:split] == false
+            if group.metadata[:paraspec] && group.metadata[:paraspec][:group]
               # unsplittable group
             else
               new_groups += group.children
