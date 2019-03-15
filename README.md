@@ -109,7 +109,8 @@ failing tests.
 
 ### Debugging
 
-Paraspec offers several debugging aids. The first one is the terminal option:
+Paraspec offers several debugging aids. For interactive debugging use the
+terminal option:
 
     paraspec -T
 
