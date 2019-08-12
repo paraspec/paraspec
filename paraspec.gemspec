@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Oleg Pudeyev"]
   s.email       = "oleg@olegp.name"
   s.homepage    = "https://github.com/paraspec/paraspec"
-  s.summary     = "paraspec-0.0.2"
+  s.summary     = "paraspec-0.0.3"
   s.description = "Parallel RSpec runner"
 
   s.files            = `git ls-files -- lib/*`.split("\n")
