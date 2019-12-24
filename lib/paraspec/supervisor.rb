@@ -101,27 +101,24 @@ module Paraspec
     def run_supervisor
       start_time = Time.now
 
-      if master_client.request('non_example_exception_count').to_i == 0
-        master_client.request('suite_started')
-
-        start_workers
-        wait_for_workers
-
-        status = 0
-      else
-        status = 1
+      if master_client.request('non_example_exception_count').to_i != 0
+        raise TestLoadError, 'There was a problem loading the test suite'
       end
+
+      master_client.request('suite_started')
+
+      start_workers
+      wait_for_workers
 
       master_client.reconnect!
       puts "dumping summary"
       master_client.request('dump_summary')
-      if status == 0
-        status = master_client.request('status')
-      end
+      status = master_client.request('status')
       Paraspec.logger.debug_state("Asking master to stop")
       master_client.request('stop')
       wait_for_process(@master_pid, 'Master', MasterFailed)
-      exit status
+
+      exit(status)
     end
 
     def start_workers

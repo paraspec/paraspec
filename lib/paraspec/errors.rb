@@ -6,8 +6,11 @@ module Paraspec
   class InconsistentTestSuite < Error; end
 
   # A worker process exited with non-zero status
-  class WorkerFailed < StandardError; end
+  class WorkerFailed < Error; end
 
   # Master process exited with non-zero status
-  class MasterFailed < StandardError; end
+  class MasterFailed < Error; end
+
+  # There were errors while loading the test suite
+  class TestLoadError < Error; end
 end
