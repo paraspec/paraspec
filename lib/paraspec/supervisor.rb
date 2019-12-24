@@ -11,6 +11,7 @@ module Paraspec
       @original_process_title = $0
       $0 = "#{@original_process_title} [supervisor]"
       Paraspec.logger.ident = '[s]'
+
       if options[:config_path]
         config = YAML.load(File.read(options[:config_path]))
         @concurrency = config['concurrency']
