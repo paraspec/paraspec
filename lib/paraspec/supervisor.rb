@@ -66,12 +66,17 @@ module Paraspec
       # test suites in any process.
       require 'msgpack'
 
+      spawn_master
+      run_supervisor
+    end
+
+    def spawn_master
       rd, wr = IO.pipe
       if @master_pid = fork
         # parent - supervisor
         wr.close
         @master_pipe = rd
-        run_supervisor
+        return
       else
         # child - master
         rd.close
@@ -94,7 +99,7 @@ module Paraspec
 
         master = Master.new(:supervisor_pipe => wr)
         master.run
-        exit(0)
+        exit
       end
     end
 
@@ -142,29 +147,33 @@ module Paraspec
       @worker_pids = []
 
       1.upto(@concurrency) do |i|
-        rd, wr = IO.pipe
-        if worker_pid = fork
-          # parent
-          wr.close
-          @worker_pipes << rd
-          @worker_pids << worker_pid
-        else
-          # child - worker
-          rd.close
+        spawn_worker(i)
+      end
+    end
 
-          set_worker_identification(i)
+    def spawn_worker(number)
+      rd, wr = IO.pipe
+      if worker_pid = fork
+        # parent
+        wr.close
+        @worker_pipes << rd
+        @worker_pids << worker_pid
+      else
+        # child - worker
+        rd.close
 
-          env = @env && @env[i]
-          if env
-            ENV.update(env)
-          end
+        set_worker_identification(number)
 
-          if RSpec.world.example_groups.count > 0
-            raise InternalError, 'Example groups loaded too early/spilled across processes'
-          end
-          Worker.new(:number => i, :supervisor_pipe => wr).run
-          exit(0)
+        env = @env && @env[number]
+        if env
+          ENV.update(env)
         end
+
+        if RSpec.world.example_groups.count > 0
+          raise InternalError, 'Example groups loaded too early/spilled across processes'
+        end
+        Worker.new(:number => number, :supervisor_pipe => wr).run
+        exit
       end
     end
 
