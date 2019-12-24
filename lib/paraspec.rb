@@ -1,3 +1,5 @@
+autoload :YAML, 'yaml'
+
 require 'paraspec/rspec_patches'
 require 'paraspec/version'
 require 'paraspec/errors'

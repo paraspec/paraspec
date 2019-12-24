@@ -99,6 +99,14 @@ module Paraspec
       RSpecFacade.all_examples.count
     end
 
+    def example_descriptions
+      {}.tap do |example_descriptions|
+        RSpecFacade.all_examples.map do |example|
+          example_descriptions[example.id] = example.full_description
+        end
+      end
+    end
+
     def get_spec
       while true
         example_group = @queue.shift

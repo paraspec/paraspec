@@ -11,7 +11,16 @@ module Paraspec
       @original_process_title = $0
       $0 = "#{@original_process_title} [supervisor]"
       Paraspec.logger.ident = '[s]'
-      @concurrency = options[:concurrency] || 1
+      if options[:config_path]
+        config = YAML.load(File.read(options[:config_path]))
+        @concurrency = config['concurrency']
+        @env = config['env']
+      end
+      if options[:concurrency]
+        @concurrency = options[:concurrency]
+      else
+        @concurrency ||= 1
+      end
       @terminal = options[:terminal]
       @options = options
     end
@@ -71,6 +80,17 @@ module Paraspec
         end
         Paraspec.logger.ident = '[m]'
         rd.close
+
+        env_key = if @options[:master_is_1]
+          1
+        else
+          0
+        end
+        env = @env[env_key]
+        if env
+          ENV.update(env)
+        end
+
         master = Master.new(:supervisor_pipe => wr)
         master.run
         exit(0)
@@ -98,6 +118,12 @@ module Paraspec
             $0 = "#{@original_process_title} [worker-#{i}]"
             Paraspec.logger.ident = "[w#{i}]"
             rd.close
+
+            env = @env[i]
+            if env
+              ENV.update(env)
+            end
+
             if RSpec.world.example_groups.count > 0
               raise 'Example groups loaded too early/spilled across processes'
             end

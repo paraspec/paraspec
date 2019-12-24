@@ -9,6 +9,16 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = 'Usage: paraspec [options] [-- [rspec-options]...]'
 
+  opts.on('-f', '--config=PATH', 'Path to configuration file') do |v|
+    unless File.exist?(v)
+      raise "Configuration file does not exist: #{v}"
+    end
+    unless File.file?(v)
+      raise "Configuration file is not a file: #{v}"
+    end
+    options[:config_path] = v
+  end
+
   opts.on('-c', '--concurrency=NUM', 'Number of concurrent workers to use') do |v|
     if v.to_i == 0
       raise "Invalid concurrency value: #{v}"
