@@ -9,8 +9,7 @@ module Paraspec
 
     def initialize(options={})
       @original_process_title = $0
-      $0 = "#{@original_process_title} [supervisor]"
-      Paraspec.logger.ident = '[s]'
+      set_supervisor_identification
 
       if options[:config_path]
         config = YAML.load(File.read(options[:config_path]))
@@ -75,12 +74,13 @@ module Paraspec
         run_supervisor
       else
         # child - master
-        $0 = "#{@original_process_title} [master]"
+        rd.close
+
+        set_master_identification
+
         if @options[:master_is_1]
           ENV['TEST_ENV_NUMBER'] = '1'
         end
-        Paraspec.logger.ident = '[m]'
-        rd.close
 
         env_key = if @options[:master_is_1]
           1
@@ -96,6 +96,21 @@ module Paraspec
         master.run
         exit(0)
       end
+    end
+
+    def set_supervisor_identification
+      $0 = "#{@original_process_title} [supervisor]"
+      Paraspec.logger.ident = '[s]'
+    end
+
+    def set_master_identification
+      $0 = "#{@original_process_title} [master]"
+      Paraspec.logger.ident = '[m]'
+    end
+
+    def set_worker_identification(number)
+      $0 = "#{@original_process_title} [worker-#{number}]"
+      Paraspec.logger.ident = "[w#{number}]"
     end
 
     def run_supervisor
@@ -135,9 +150,9 @@ module Paraspec
           @worker_pids << worker_pid
         else
           # child - worker
-          $0 = "#{@original_process_title} [worker-#{i}]"
-          Paraspec.logger.ident = "[w#{i}]"
           rd.close
+
+          set_worker_identification(i)
 
           env = @env && @env[i]
           if env
