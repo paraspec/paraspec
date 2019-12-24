@@ -54,7 +54,7 @@ module Paraspec
         file_path: notification.example.metadata[:file_path],
         scoped_id: notification.example.metadata[:scoped_id],
       }
-      @master_client.request('notify-example-started', spec: spec, _noret: true)
+      @master_client.request('notify_example_started', spec: spec, _noret: true)
     end
 
     def example_passed(notification)
@@ -67,7 +67,7 @@ module Paraspec
         scoped_id: notification.example.metadata[:scoped_id],
       }
       execution_result = notification.example.execution_result
-      @master_client.request('example-passed',
+      @master_client.request('example_passed',
         spec: spec, result: execution_result, _noret: true)
     end
 

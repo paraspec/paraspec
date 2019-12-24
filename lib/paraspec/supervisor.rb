@@ -100,8 +100,8 @@ module Paraspec
     def run_supervisor
       start_time = Time.now
 
-      if master_client.request('non-example-exception-count').to_i == 0
-        master_client.request('suite-started')
+      if master_client.request('non_example_exception_count').to_i == 0
+        master_client.request('suite_started')
 
         @worker_pipes = []
         @worker_pids = []
@@ -144,7 +144,7 @@ module Paraspec
 
       master_client.reconnect!
       puts "dumping summary"
-      master_client.request('dump-summary')
+      master_client.request('dump_summary')
       if status == 0
         status = master_client.request('status')
       end

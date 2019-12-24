@@ -96,7 +96,7 @@ module Paraspec
 
       while true
         Paraspec.logger.debug_state("Requesting a spec")
-        spec = master_client.request('get-spec')
+        spec = master_client.request('get_spec')
         Paraspec.logger.debug_state("Got spec #{spec || 'nil'}")
         # HTTP transport returns no spec as an empty hash,
         # msgpack transport returns as nil
