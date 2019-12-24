@@ -83,22 +83,7 @@ module Paraspec
 
         set_master_identification
 
-        if @options[:master_is_1]
-          ENV['TEST_ENV_NUMBER'] = '1'
-        end
-
-        env_key = if @options[:master_is_1]
-          1
-        else
-          0
-        end
-        env = @env && @env[env_key]
-        if env
-          ENV.update(env)
-        end
-
-        master = Master.new(:supervisor_pipe => wr)
-        master.run
+        run_master(wr)
         exit
       end
     end
@@ -142,6 +127,25 @@ module Paraspec
       raise
     end
 
+    def run_master(pipe_wr)
+      if @options[:master_is_1]
+        ENV['TEST_ENV_NUMBER'] = '1'
+      end
+
+      env_key = if @options[:master_is_1]
+        1
+      else
+        0
+      end
+      env = @env && @env[env_key]
+      if env
+        ENV.update(env)
+      end
+
+      master = Master.new(:supervisor_pipe => pipe_wr)
+      master.run
+    end
+
     def start_workers
       @worker_pipes = []
       @worker_pids = []
@@ -164,17 +168,21 @@ module Paraspec
 
         set_worker_identification(number)
 
-        env = @env && @env[number]
-        if env
-          ENV.update(env)
-        end
-
-        if RSpec.world.example_groups.count > 0
-          raise InternalError, 'Example groups loaded too early/spilled across processes'
-        end
-        Worker.new(:number => number, :supervisor_pipe => wr).run
+        run_worker(number, wr)
         exit
       end
+    end
+
+    def run_worker(number, pipe_wr)
+      env = @env && @env[number]
+      if env
+        ENV.update(env)
+      end
+
+      if RSpec.world.example_groups.count > 0
+        raise InternalError, 'Example groups loaded too early/spilled across processes'
+      end
+      Worker.new(:number => number, :supervisor_pipe => pipe_wr).run
     end
 
     def wait_for_workers
