@@ -27,7 +27,7 @@ module Paraspec
           end
         end
         if resp.status != 200
-          raise "Request failed: #{url} (#{resp.status})"
+          raise InternalError, "Request failed: #{url} (#{resp.status})"
         end
         JSON.parse(resp.body)
       rescue Faraday::ConnectionFailed

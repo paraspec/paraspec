@@ -12,7 +12,7 @@ module Paraspec
       ENV['TEST_ENV_NUMBER'] = @number.to_s
       @supervisor_pipe = options[:supervisor_pipe]
       if RSpec.world.example_groups.count > 0
-        raise 'Example groups loaded too early/spilled across processes'
+        raise InternalError, 'Example groups loaded too early/spilled across processes'
       end
       @terminal = options[:terminal]
 

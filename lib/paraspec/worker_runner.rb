@@ -18,7 +18,7 @@ module Paraspec
 
     def run(spec)
       if RSpecFacade.all_example_groups.count == 0
-        raise "No example groups loaded"
+        raise InternalError, "No example groups loaded"
       end
       group = RSpecFacade.all_example_groups.detect do |g|
         g.metadata[:file_path] == spec[:file_path] &&
@@ -27,7 +27,7 @@ module Paraspec
       unless group
         puts "No example group for #{spec.inspect}, #{RSpecFacade.all_example_groups.count} total groups"
       #byebug
-        raise "No example group for #{spec.inspect}"
+        raise InternalError, "No example group for #{spec.inspect}"
       end
       if group.metadata[:paraspec] && group.metadata[:paraspec][:group]
         # unsplittable group

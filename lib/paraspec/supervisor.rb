@@ -145,7 +145,7 @@ module Paraspec
           end
 
           if RSpec.world.example_groups.count > 0
-            raise 'Example groups loaded too early/spilled across processes'
+            raise InternalError, 'Example groups loaded too early/spilled across processes'
           end
           Worker.new(:number => i, :supervisor_pipe => wr).run
           exit(0)

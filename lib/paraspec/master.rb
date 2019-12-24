@@ -15,7 +15,7 @@ module Paraspec
       @supervisor_pipe = options[:supervisor_pipe]
       #RSpec.configuration.formatter = 'progress'
       if RSpec.world.example_groups.count > 0
-        raise 'Example groups loaded too early/spilled across processes'
+        raise InternalError, 'Example groups loaded too early/spilled across processes'
       end
 
       rspec_options = RSpec::Core::ConfigurationOptions.new(ARGV)
@@ -159,7 +159,7 @@ module Paraspec
     def find_example(spec)
       if spec.nil?
         #byebug
-        raise ArgumentError, 'Nil spec'
+        raise InternalError, 'Nil spec'
       end
       example = (RSpecFacade.all_example_groups + RSpecFacade.all_examples).detect do |example|
         example.metadata[:file_path] == spec[:file_path] &&
@@ -168,7 +168,7 @@ module Paraspec
       unless example
         puts "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
       #byebug
-        raise "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
+        raise InternalError, "Not found: #{spec[:file_path]}[#{spec[:scoped_id]}]"
       end
       example
     end
