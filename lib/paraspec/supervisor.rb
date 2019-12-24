@@ -109,16 +109,17 @@ module Paraspec
 
       start_workers
       wait_for_workers
+      dump_summary
 
-      master_client.reconnect!
-      puts "dumping summary"
-      master_client.request('dump_summary')
       status = master_client.request('status')
       Paraspec.logger.debug_state("Asking master to stop")
       master_client.request('stop')
       wait_for_process(@master_pid, 'Master', MasterFailed)
 
       exit(status)
+    rescue
+      dump_summary rescue nil
+      raise
     end
 
     def start_workers
@@ -157,6 +158,17 @@ module Paraspec
       @worker_pids.each_with_index do |pid, i|
         Paraspec.logger.debug_state("Waiting for worker #{i+1} at #{pid}")
         wait_for_process(pid, "Worker #{i+1}", WorkerFailed)
+      end
+    end
+
+    def dump_summary
+      # This method is called when handling exceptions - only dump summary once
+      unless @summary_dumped
+        master_client.reconnect!
+        puts "dumping summary"
+        master_client.request('dump_summary')
+
+        @summary_dumped = true
       end
     end
 
