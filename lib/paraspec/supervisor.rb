@@ -103,40 +103,9 @@ module Paraspec
       if master_client.request('non_example_exception_count').to_i == 0
         master_client.request('suite_started')
 
-        @worker_pipes = []
-        @worker_pids = []
+        start_workers
+        wait_for_workers
 
-        1.upto(@concurrency) do |i|
-          rd, wr = IO.pipe
-          if worker_pid = fork
-            # parent
-            wr.close
-            @worker_pipes << rd
-            @worker_pids << worker_pid
-          else
-            # child - worker
-            $0 = "#{@original_process_title} [worker-#{i}]"
-            Paraspec.logger.ident = "[w#{i}]"
-            rd.close
-
-            env = @env && @env[i]
-            if env
-              ENV.update(env)
-            end
-
-            if RSpec.world.example_groups.count > 0
-              raise 'Example groups loaded too early/spilled across processes'
-            end
-            Worker.new(:number => i, :supervisor_pipe => wr).run
-            exit(0)
-          end
-        end
-
-        Paraspec.logger.debug_state("Waiting for workers")
-        @worker_pids.each_with_index do |pid, i|
-          Paraspec.logger.debug_state("Waiting for worker #{i+1} at #{pid}")
-          wait_for_process(pid, "Worker #{i+1}", WorkerFailed)
-        end
         status = 0
       else
         status = 1
@@ -152,6 +121,45 @@ module Paraspec
       master_client.request('stop')
       wait_for_process(@master_pid, 'Master', MasterFailed)
       exit status
+    end
+
+    def start_workers
+      @worker_pipes = []
+      @worker_pids = []
+
+      1.upto(@concurrency) do |i|
+        rd, wr = IO.pipe
+        if worker_pid = fork
+          # parent
+          wr.close
+          @worker_pipes << rd
+          @worker_pids << worker_pid
+        else
+          # child - worker
+          $0 = "#{@original_process_title} [worker-#{i}]"
+          Paraspec.logger.ident = "[w#{i}]"
+          rd.close
+
+          env = @env && @env[i]
+          if env
+            ENV.update(env)
+          end
+
+          if RSpec.world.example_groups.count > 0
+            raise 'Example groups loaded too early/spilled across processes'
+          end
+          Worker.new(:number => i, :supervisor_pipe => wr).run
+          exit(0)
+        end
+      end
+    end
+
+    def wait_for_workers
+      Paraspec.logger.debug_state("Waiting for workers")
+      @worker_pids.each_with_index do |pid, i|
+        Paraspec.logger.debug_state("Waiting for worker #{i+1} at #{pid}")
+        wait_for_process(pid, "Worker #{i+1}", WorkerFailed)
+      end
     end
 
     def wait_for_process(pid, process_name, exception_class)
