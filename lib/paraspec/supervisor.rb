@@ -86,7 +86,7 @@ module Paraspec
         else
           0
         end
-        env = @env[env_key]
+        env = @env && @env[env_key]
         if env
           ENV.update(env)
         end
@@ -119,7 +119,7 @@ module Paraspec
             Paraspec.logger.ident = "[w#{i}]"
             rd.close
 
-            env = @env[i]
+            env = @env && @env[i]
             if env
               ENV.update(env)
             end
