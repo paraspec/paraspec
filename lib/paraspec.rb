@@ -1,4 +1,5 @@
 autoload :YAML, 'yaml'
+autoload :Byebug, 'byebug'
 
 require 'paraspec/rspec_patches'
 require 'paraspec/version'

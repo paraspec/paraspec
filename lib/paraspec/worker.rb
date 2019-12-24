@@ -32,7 +32,8 @@ module Paraspec
       RSpecFacade.all_example_groups
       RSpecFacade.all_examples
 
-      master_example_count = master_client.request('example-count')
+#=begin
+      master_example_count = master_client.request('example_count')
       if master_example_count != RSpecFacade.all_examples.count
         # Workers and master should have the same examples defined.
         # If a test suite conditionally defines examples, it needs to
@@ -48,6 +49,50 @@ module Paraspec
         #byebug
         raise InconsistentTestSuite, "Worker #{@number} has #{RSpecFacade.all_examples.count} examples, master has #{master_example_count}"
       end
+#=end
+
+=begin
+      master_example_descriptions = master_client.request('example_descriptions')
+      example_descriptions = {}
+      RSpecFacade.all_examples.map do |example|
+        example_descriptions[example.id] = example.full_description
+      end
+      worker_missing = {}
+      different = {}
+      master_example_descriptions.each do |k, v|
+        unless example_descriptions[k]
+          worker_missing[k] = v
+        end
+        if example_descriptions[k] != v
+        #byebug
+          different[k] = "#{v} / #{example_descriptions[k]}"
+        end
+      end
+      worker_extra = {}
+      example_descriptions.each do |k, v|
+        unless master_example_descriptions[k]
+          worker_extra[k] = v
+        end
+      end
+      unless worker_missing.empty? && worker_extra.empty?
+        puts "The following examples are defined in master but not worker #{@number}:"
+        worker_missing.each do |id, desc|
+          puts "#{id} #{desc}"
+        end
+        puts "The following examples are defined in worker #{@number} but not master:"
+        worker_extra.each do |id, desc|
+          puts "#{id} #{desc}"
+        end
+= begin
+        puts "The following examples differ between master and worker #{@number}:"
+        different.each do |id, desc|
+          puts "#{id} #{desc}"
+        end
+= end
+#Byebug.byebug
+        raise InconsistentTestSuite
+      end
+=end
 
       while true
         Paraspec.logger.debug_state("Requesting a spec")
