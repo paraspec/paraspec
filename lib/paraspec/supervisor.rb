@@ -51,6 +51,12 @@ module Paraspec
 
       Paraspec::Ipc.pick_master_app_port
 
+      # msgpack adds methods to Array, which may change the set of defined
+      # examples when a test suite tests proxy objects and checks that, say,
+      # each Array method is forwarded. Require msgpack prior to loading
+      # test suites in any process.
+      require 'msgpack'
+
       rd, wr = IO.pipe
       if @master_pid = fork
         # parent - supervisor
