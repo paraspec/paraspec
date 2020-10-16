@@ -183,3 +183,7 @@ Please report via issues and pull requests.
 ## License
 
 MIT
+
+## See Also
+
+[Knapsack](https://docs.knapsackpro.com/ruby/knapsack#step-for-rspec)
