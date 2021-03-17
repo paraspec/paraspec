@@ -8,6 +8,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'childprocess'
   gem 'rspec_junit_formatter'
   gem 'nokogiri'
   gem 'fuubar'
