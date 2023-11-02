@@ -21,7 +21,7 @@ module Paraspec
         raise InternalError, "No example groups loaded"
       end
       group = RSpecFacade.all_example_groups.detect do |g|
-        g.metadata[:file_path] == spec[:file_path] &&
+        g.metadata[:rerun_file_path] == spec[:file_path] &&
         g.metadata[:scoped_id] == spec[:scoped_id]
       end
       unless group
@@ -69,7 +69,7 @@ module Paraspec
       # include examples from all other files (it also mutates the filters
       # when querying them for example groups... ugh)
       run_example_groups = RSpec.world.ordered_example_groups.select do |c_group|
-        c_group.metadata[:file_path] == spec[:file_path]
+        c_group.metadata[:rerun_file_path] == spec[:file_path]
       end
       runner.run_specs(run_example_groups)
     end
