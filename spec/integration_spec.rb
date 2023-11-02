@@ -188,8 +188,9 @@ describe 'Integration tests' do
     let(:result) { run_paraspec_in_fixture('shared-examples', '-c', '1', '--', '-fd') }
 
     it 'succeeds' do
-      result.exit_code.should == 0
-      result.output.should include('1 example, 0 failures')
+      result.exit_code.should == 1
+      result.output.should include('2 examples, 1 failure')
+      result.output.should include('in good context performs poorly')
     end
   end
 

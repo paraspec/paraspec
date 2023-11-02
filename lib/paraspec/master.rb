@@ -127,7 +127,7 @@ module Paraspec
         end
 
         return {
-          file_path: m[:file_path],
+          file_path: m[:rerun_file_path],
           scoped_id: m[:scoped_id],
         }
       end
@@ -162,7 +162,7 @@ module Paraspec
         raise InternalError, 'Nil spec'
       end
       example = (RSpecFacade.all_example_groups + RSpecFacade.all_examples).detect do |example|
-        example.metadata[:file_path] == spec[:file_path] &&
+        example.metadata[:rerun_file_path] == spec[:file_path] &&
         example.metadata[:scoped_id] == spec[:scoped_id]
       end
       unless example
